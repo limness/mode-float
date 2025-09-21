@@ -1,0 +1,50 @@
+collector_name: pg_app
+
+metrics:
+  - metric_name: pg_count_users
+    type: gauge
+    help: 'Number of users'
+    values:
+      - all_users
+    query_ref: _db_pg_count_users
+
+  - metric_name: pg_count_active_users
+    type: gauge
+    help: 'Number of active users'
+    values:
+      - active_users
+    query_ref: _db_pg_count_active_users
+
+  - metric_name: pg_count_events
+    type: gauge
+    help: 'Number of events'
+    values:
+      - all_events
+    query_ref: _db_pg_count_events
+
+  - metric_name: pg_count_active_events
+    type: gauge
+    help: 'Number of active events'
+    values:
+      - active_events
+    query_ref: _db_pg_count_active_events
+
+queries:
+  - query_name: _db_pg_count_users
+    query: |
+      select count(*) as all_users from users;
+  
+  - query_name: _db_pg_count_active_users
+    query: |
+      SELECT COUNT(DISTINCT user_id) AS active_users
+      FROM seen_events
+      WHERE seen_at >= NOW() - INTERVAL '24 hours';
+
+  - query_name: _db_pg_count_events
+    query: |
+      select count(*) as all_events from events;
+
+  - query_name: _db_pg_count_active_events
+    query: |
+      SELECT count(*) as active_events from events
+      WHERE starts_at >= NOW();

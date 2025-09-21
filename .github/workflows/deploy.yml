@@ -1,0 +1,70 @@
+name: Deploy services
+
+on:
+  push:
+    branches: [ "dev" ]
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: 'Docker image tag (SHA, latest, etc)'
+        required: true
+        default: 'latest'
+
+env:
+  IMAGE_NAME: ghcr.io/${{ secrets.DOCKER_REGISTRY_USER }}/templateproject
+  IMAGE_TAG: ${{ github.sha }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to Docker Registry
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_REGISTRY_USER }}
+          password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+            ${{ env.IMAGE_NAME }}:latest
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.DEPLOY_SERVER }}
+          username: ${{ secrets.DEPLOY_USER }}
+          password: ${{ secrets.DEPLOY_PASSWORD }}
+          script: |
+            echo "IMAGE_TAG=$IMAGE_TAG" > .env
+            set -e
+      
+            echo "Updating local secrets for project..."
+            if [ ! -d ~/project-secrets ]; then
+              git clone git@github.com:limness/project-secrets.git ~/project-secrets
+            else
+              cd ~/project-secrets && git pull origin main && cd ..
+            fi
+            rm -rf ~/templateproject/secrets
+            cp -r ~/project-secrets/templateproject ~/templateproject/secrets
+            
+            echo "Recreating containers with updated config..."
+            cd ~/templateproject
+            docker compose -f docker-compose.yaml pull
+            docker compose -f docker-compose.yaml up -d
+            
+            echo "Cleaning up unused Docker images..."
+            docker image prune -f
+            
+            echo "✅ Deployment finished successfully!"

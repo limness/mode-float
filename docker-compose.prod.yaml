@@ -1,0 +1,142 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: 'templateproject'
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: 'postgres'
+    ports:
+      - '5432:5432'
+    volumes:
+      - './data/postgres:/var/lib/postgresql/data'
+    networks:
+      - templateproject-network
+
+  migration:
+    image: andrewlimit/templateproject:${IMAGE_TAG}
+    command: sh -c "poetry run alembic upgrade head"
+    env_file:
+      - .env.prod
+    depends_on:
+      - postgres
+    networks:
+      - templateproject-network
+
+  app:
+    image: andrewlimit/templateproject:${IMAGE_TAG}
+    env_file:
+      - .env.prod
+    ports:
+      - '8000:80'
+    networks:
+      - templateproject-network
+    volumes:
+      - './alembic/versions:/templateproject/alembic/versions'
+      - './logs:/templateproject/logs'
+    depends_on:
+      - postgres
+      - migration
+    restart: always
+
+  kudago_worker:
+    image: andrewlimit/templateproject:${IMAGE_TAG}
+    env_file:
+      - .env.prod
+    command: ["python", "-m", "src.workers.kudago_worker"]
+    volumes:
+      - './logs:/templateproject/logs'
+    depends_on:
+      - postgres
+      - migration
+    networks:
+      - templateproject-network
+    restart: always
+
+  telegram_worker:
+    image: andrewlimit/templateproject:${IMAGE_TAG}
+    env_file:
+      - .env.prod
+    command: ["python", "-m", "src.workers.telegram_worker"]
+    volumes:
+      - './logs:/templateproject/logs'
+      - './src/workers:/templateproject/src/workers'
+    depends_on:
+      - postgres
+      - migration
+    networks:
+      - templateproject-network
+    restart: always
+
+  prometheus:
+    image: docker.io/prom/prometheus:v3.5.0
+    command:
+      - --config.file=/etc/prometheus/prometheus.yaml
+      - --storage.tsdb.retention.time=7d
+      - --storage.tsdb.retention.size=5GB
+    volumes:
+      - './config/prometheus.yaml:/etc/prometheus/prometheus.yaml:ro'
+      - './config/alert.rules.yaml:/etc/prometheus/alert.rules.yaml:ro'
+      - 'prometheus-data:/prometheus'
+    restart: always
+    networks:
+      - templateproject-network
+
+  alertmanager:
+    image: quay.io/prometheus/alertmanager:v0.28.1
+    restart: always
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yaml'
+      - '--storage.path=/alertmanager'
+    volumes:
+      - './config/alertmanager.yaml:/etc/alertmanager/alertmanager.yaml:ro'
+      - './config/telegram.tmpl:/etc/alertmanager/telegram.tmpl:ro'
+      - 'alertmanager-data:/alertmanager'
+    networks:
+      - templateproject-network
+
+  node_exporter:
+    image: quay.io/prometheus/node-exporter:v1.9.1
+    command: "--path.rootfs=/host"
+    pid: host
+    restart: always
+    volumes:
+      - /:/host:ro
+    networks:
+      - templateproject-network
+
+  postgres_exporter:
+    image: quay.io/prometheuscommunity/postgres-exporter:v0.17.1
+    restart: always
+    env_file:
+      - .env.prod
+    depends_on:
+      - postgres
+    networks:
+      - templateproject-network
+
+  sql_exporter:
+    image: burningalchemist/sql_exporter:0.18
+    restart: always
+    command:
+      - --config.file=/etc/sql_exporter/config.yaml
+    volumes:
+      - './config/sql_exporter.yaml:/etc/sql_exporter/config.yaml:ro'
+      - './config/pg_app.collector.yaml:/etc/sql_exporter/pg_app.collector.yaml:ro'
+    env_file:
+      - .env.prod
+    depends_on:
+      - postgres
+    networks:
+      - templateproject-network
+
+volumes:
+  prometheus-data:
+    driver: local
+  alertmanager-data:
+    driver: local
+
+networks:
+  templateproject-network:
+    driver: bridge

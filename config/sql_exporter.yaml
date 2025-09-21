@@ -1,0 +1,13 @@
+global:
+  scrape_timeout_offset: 500ms
+  min_interval: 0s
+  max_connections: 3
+  max_idle_connections: 3
+  max_connection_lifetime: 5m
+
+target:
+  data_source_name: 'postgresql://postgres:postgres@postgres:5432/templateproject?sslmode=disable'
+  collectors: [pg_*]
+
+collector_files: 
+  - "*.collector.yaml"

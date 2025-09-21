@@ -1,0 +1,114 @@
+groups:
+  - name: node_alert
+    rules:
+      # Service down
+      - alert: ServiceDown
+        expr: up == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Service down on {{ $labels.job }} ({{ $labels.instance }})"
+          description: "Service down for more than 5 minutes on {{ $labels.job }} ({{ $labels.instance }})"
+
+      # CPU usage critical
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 90
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High CPU usage on {{ $labels.instance }}"
+          description: "CPU usage > 90% for 10 minutes"
+
+      # Memory usage critical
+      - alert: HighMemoryUsage
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 90
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High memory usage on {{ $labels.instance }}"
+          description: "Memory usage > 90% for 10 minutes"
+
+      # Disk space critical
+      - alert: LowDiskSpace
+        expr: (node_filesystem_size_bytes{fstype!~"tmpfs|overlay"} - node_filesystem_free_bytes{fstype!~"tmpfs|overlay"}) / node_filesystem_size_bytes{fstype!~"tmpfs|overlay"} * 100 > 90
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Low disk space on {{ $labels.instance }} (mount {{ $labels.mountpoint }})"
+          description: "Disk usage > 90% for 10 minutes on mount {{ $labels.mountpoint }}"
+
+      # Disk read/write latency warning
+      - alert: HighDiskLatency
+        expr: rate(node_disk_io_time_seconds_total[5m]) > 0.1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High disk IO latency on {{ $labels.instance }}"
+          description: "Disk IO latency > 10% for 10 minutes on device {{ $labels.device }}"
+
+      # System rebooted
+      - alert: NodeRebooted
+        expr: changes(node_boot_time_seconds[5m]) > 0
+        for: 0m
+        labels:
+          severity: info
+        annotations:
+          summary: "Node rebooted on {{ $labels.instance }}"
+          description: "Node was rebooted in the last 5 minutes"
+
+  - name: postgres_alert
+    rules:
+      # Too many connections
+      - alert: PostgresTooManyConnections
+        expr: pg_stat_activity_count / pg_settings_max_connections * 100 > 90
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Too many PostgreSQL connections on {{ $labels.instance }}"
+          description: "More than 90% of max_connections used for 5 minutes"
+
+      # Database size warning
+      - alert: PostgresDatabaseSize
+        expr: pg_database_size_bytes > 20000000000
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Large database size on {{ $labels.instance }}"
+          description: "Database size exceeds 20 GB"
+
+      # Deadlocks detected
+      - alert: PostgresDeadlocks
+        expr: increase(pg_stat_database_deadlocks[5m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PostgreSQL deadlocks detected on {{ $labels.instance }}"
+          description: "Deadlocks detected in the last 5 minutes"
+
+      # Slow queries
+      - alert: PostgresSlowQueries
+        expr: increase(pg_stat_activity_longest_query[5m]) > 0
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Slow queries detected on {{ $labels.instance }}"
+          description: "There were slow queries in the last 5 minutes"
+
+      # Low available disk for Postgres data
+      - alert: PostgresLowDisk
+        expr: (node_filesystem_size_bytes{mountpoint="/var/lib/postgresql/data"} - node_filesystem_free_bytes{mountpoint="/var/lib/postgresql/data"}) / node_filesystem_size_bytes{mountpoint="/var/lib/postgresql/data"} * 100 > 90
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Low disk space for PostgreSQL data on {{ $labels.instance }}"
+          description: "Disk usage > 90% for 10 minutes on /var/lib/postgresql/data"

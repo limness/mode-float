@@ -1,0 +1,42 @@
+global:
+  scrape_interval: 15s
+
+rule_files:
+  - "alert.rules.yaml"
+
+scrape_configs:
+  - job_name: 'prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['prometheus:9090']
+
+  - job_name: 'templateproject-bot'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['app:8000']
+
+  - job_name: 'node_exporter'
+    static_configs:
+      - targets: ['node_exporter:9100']
+
+  - job_name: 'postgres_exporter'
+    static_configs:
+      - targets: ['postgres_exporter:9187']
+
+  - job_name: 'sql_exporter'
+    static_configs:
+      - targets: ['sql_exporter:9399']
+
+### Remove this section if you haven't alerting service (tg bot) ###
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['alertmanager:9093']
+
+### Remove this section if you haven't remote server ###
+remote_write:
+  - url: https://prometheus-prod-39-prod-eu-north-0.grafana.net/api/prom/push
+    basic_auth:
+      username: <secret>
+      password: <secret>
+
