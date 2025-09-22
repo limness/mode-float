@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "templateproject-bot"
+name = "float-mode"
 version = "0.1.0"
 description = "Event management bot"
-authors = ["andrejcyrkunov <a.tsyrkunov@templateproject.com>", "DenisIndenbom <denis.indenbom@yandex.ru>"]
+authors = ["andrejcyrkunov <a.tsyrkunov@float-mode.com>", "DenisIndenbom <denis.indenbom@yandex.ru>"]
 readme = "README.md"
 package-mode = false
 

@@ -48,11 +48,6 @@ docker-run-deps:
 	docker-compose up --scale app=0 --scale kudago_worker=0 -d
 
 
-.PHONY: tg-worker
-tg-worker:
-	docker-compose run telegram_worker
-
-
 .PHONY: docker-upgrade
 docker-upgrade:
 	docker compose run app bash -c "poetry run alembic upgrade head"

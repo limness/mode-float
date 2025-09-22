@@ -5,21 +5,19 @@ FROM python:3.12-alpine
 RUN apk add --no-cache gcc libffi-dev musl-dev curl bash
 
 # Add project files to install dependencies
-WORKDIR /templateproject
+WORKDIR /float-mode
 ADD pyproject.toml poetry.lock ./
 
 # Install Poetry and project dependencies
 RUN pip install poetry \
     && poetry config virtualenvs.create false \
     && poetry install --only main
-RUN pip install telethon
 
 # Copy application code and required files
 ADD alembic.ini .
 ADD alembic ./alembic
 ADD logs ./logs
 ADD src ./src
-ADD img ./img
 
 # Add entrypoint.sh and grant execution permissions
 ADD entrypoint.sh .

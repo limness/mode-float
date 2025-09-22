@@ -4,69 +4,40 @@ services:
   postgres:
     image: postgres:16
     environment:
-      POSTGRES_DB: 'templateproject'
+      POSTGRES_DB: 'float-mode'
       POSTGRES_USER: 'postgres'
       POSTGRES_PASSWORD: 'postgres'
     ports:
-      - '5432:5432'
+      - '5433:5432'
     volumes:
       - './data/postgres:/var/lib/postgresql/data'
     networks:
-      - templateproject-network
+      - float-mode-network
 
   migration:
-    image: andrewlimit/templateproject:${IMAGE_TAG}
+    image: andrewlimit/float-mode:${IMAGE_TAG}
     command: sh -c "poetry run alembic upgrade head"
     env_file:
       - .env.prod
     depends_on:
       - postgres
     networks:
-      - templateproject-network
+      - float-mode-network
 
   app:
-    image: andrewlimit/templateproject:${IMAGE_TAG}
+    image: andrewlimit/float-mode:${IMAGE_TAG}
     env_file:
       - .env.prod
     ports:
-      - '8000:80'
+      - '8080:80'
     networks:
-      - templateproject-network
+      - float-mode-network
     volumes:
-      - './alembic/versions:/templateproject/alembic/versions'
-      - './logs:/templateproject/logs'
+      - './alembic/versions:/float-mode/alembic/versions'
+      - './logs:/float-mode/logs'
     depends_on:
       - postgres
       - migration
-    restart: always
-
-  kudago_worker:
-    image: andrewlimit/templateproject:${IMAGE_TAG}
-    env_file:
-      - .env.prod
-    command: ["python", "-m", "src.workers.kudago_worker"]
-    volumes:
-      - './logs:/templateproject/logs'
-    depends_on:
-      - postgres
-      - migration
-    networks:
-      - templateproject-network
-    restart: always
-
-  telegram_worker:
-    image: andrewlimit/templateproject:${IMAGE_TAG}
-    env_file:
-      - .env.prod
-    command: ["python", "-m", "src.workers.telegram_worker"]
-    volumes:
-      - './logs:/templateproject/logs'
-      - './src/workers:/templateproject/src/workers'
-    depends_on:
-      - postgres
-      - migration
-    networks:
-      - templateproject-network
     restart: always
 
   prometheus:
@@ -81,7 +52,7 @@ services:
       - 'prometheus-data:/prometheus'
     restart: always
     networks:
-      - templateproject-network
+      - float-mode-network
 
   alertmanager:
     image: quay.io/prometheus/alertmanager:v0.28.1
@@ -94,7 +65,7 @@ services:
       - './config/telegram.tmpl:/etc/alertmanager/telegram.tmpl:ro'
       - 'alertmanager-data:/alertmanager'
     networks:
-      - templateproject-network
+      - float-mode-network
 
   node_exporter:
     image: quay.io/prometheus/node-exporter:v1.9.1
@@ -104,7 +75,7 @@ services:
     volumes:
       - /:/host:ro
     networks:
-      - templateproject-network
+      - float-mode-network
 
   postgres_exporter:
     image: quay.io/prometheuscommunity/postgres-exporter:v0.17.1
@@ -114,7 +85,7 @@ services:
     depends_on:
       - postgres
     networks:
-      - templateproject-network
+      - float-mode-network
 
   sql_exporter:
     image: burningalchemist/sql_exporter:0.18
@@ -129,7 +100,7 @@ services:
     depends_on:
       - postgres
     networks:
-      - templateproject-network
+      - float-mode-network
 
 volumes:
   prometheus-data:
@@ -138,5 +109,5 @@ volumes:
     driver: local
 
 networks:
-  templateproject-network:
+  float-mode-network:
     driver: bridge

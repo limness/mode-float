@@ -2,7 +2,7 @@ services:
   postgres:
     image: postgres:16
     environment:
-      POSTGRES_DB: 'templateproject'
+      POSTGRES_DB: 'float-mode'
       POSTGRES_USER: 'postgres'
       POSTGRES_PASSWORD: 'postgres'
     ports:
@@ -10,70 +10,34 @@ services:
     volumes:
       - './data/postgres:/var/lib/postgresql/data'
     networks:
-      - templateproject-network
+      - float-mode-network
 
   migration:
     build: .
     command: sh -c "poetry run alembic upgrade head"
     volumes:
-      - './alembic/versions:/templateproject/alembic/versions'
+      - './alembic/versions:/float-mode/alembic/versions'
     environment:
-      POSTGRES_URI: 'postgresql+asyncpg://postgres:postgres@postgres:5432/templateproject'
+      POSTGRES_URI: 'postgresql+asyncpg://postgres:postgres@postgres:5432/float-mode'
     depends_on:
       - postgres
     networks:
-      - templateproject-network
+      - float-mode-network
 
   app:
     build: .
     env_file:
       - .env
     environment:
-      POSTGRES_URI: 'postgresql+asyncpg://postgres:postgres@postgres:5432/templateproject'
+      POSTGRES_URI: 'postgresql+asyncpg://postgres:postgres@postgres:5432/float-mode'
     restart: always
     networks:
-      - templateproject-network
+      - float-mode-network
     volumes:
-      - './alembic/versions:/templateproject/alembic/versions'
-      - './logs:/templateproject/logs'
+      - './alembic/versions:/float-mode/alembic/versions'
+      - './logs:/float-mode/logs'
     depends_on:
       - postgres
-
-  kudago_worker:
-    build:
-      context: .
-    env_file:
-      - .env
-    environment:
-      PYTHONPATH: .
-      POSTGRES_URI: 'postgresql+asyncpg://postgres:postgres@postgres:5432/templateproject'
-    command: ["python", "-m", "src.workers.kudago_worker"]
-    volumes:
-      - './logs:/templateproject/logs'
-    restart: always
-    depends_on:
-      - postgres
-    networks:
-      - templateproject-network
-
-  telegram_worker:
-    build:
-      context: .
-    env_file:
-      - .env
-    environment:
-      PYTHONPATH: .
-      POSTGRES_URI: 'postgresql+asyncpg://postgres:postgres@postgres:5432/templateproject'
-    command: ["python", "-m", "src.workers.telegram_worker"]
-    volumes:
-      - './logs:/templateproject/logs'
-      - './src/workers:/templateproject/src/workers'
-    depends_on:
-      - postgres
-      - migration
-    networks:
-      - templateproject-network
-    restart: always
 
   prometheus:
     image: docker.io/prom/prometheus:v3.5.0
@@ -89,7 +53,7 @@ services:
     ports:
       - '9090:9090'
     networks:
-      - templateproject-network
+      - float-mode-network
 
   alertmanager:
     image: quay.io/prometheus/alertmanager:v0.28.1
@@ -102,7 +66,7 @@ services:
       - './config/telegram.tmpl:/etc/alertmanager/telegram.tmpl:ro'
       - 'alertmanager-data:/alertmanager'
     networks:
-      - templateproject-network
+      - float-mode-network
 
   node_exporter:
     image: quay.io/prometheus/node-exporter:v1.9.1
@@ -112,7 +76,7 @@ services:
     volumes:
       - '/:/host:ro'
     networks:
-      - templateproject-network
+      - float-mode-network
 
   postgres_exporter:
     image: quay.io/prometheuscommunity/postgres-exporter:v0.17.1
@@ -122,7 +86,7 @@ services:
     depends_on:
       - postgres
     networks:
-      - templateproject-network
+      - float-mode-network
 
   sql_exporter:
     image: burningalchemist/sql_exporter:0.18
@@ -137,7 +101,7 @@ services:
     depends_on:
       - postgres
     networks:
-      - templateproject-network
+      - float-mode-network
 
 volumes:
   prometheus-data:
@@ -146,5 +110,5 @@ volumes:
     driver: local
 
 networks:
-  templateproject-network:
+  float-mode-network:
     driver: bridge

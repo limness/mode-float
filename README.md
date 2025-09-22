@@ -1,4 +1,4 @@
-# templateproject
+# float-mode
 
 ## Requirements
 

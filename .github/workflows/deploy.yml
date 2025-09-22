@@ -11,7 +11,7 @@ on:
         default: 'latest'
 
 env:
-  IMAGE_NAME: ghcr.io/${{ secrets.DOCKER_REGISTRY_USER }}/templateproject
+  IMAGE_NAME: ghcr.io/${{ secrets.DOCKER_REGISTRY_USER }}/float-mode
   IMAGE_TAG: ${{ github.sha }}
 
 jobs:
@@ -56,11 +56,11 @@ jobs:
             else
               cd ~/project-secrets && git pull origin main && cd ..
             fi
-            rm -rf ~/templateproject/secrets
-            cp -r ~/project-secrets/templateproject ~/templateproject/secrets
+            rm -rf ~/float-mode/secrets
+            cp -r ~/project-secrets/float-mode ~/float-mode/secrets
             
             echo "Recreating containers with updated config..."
-            cd ~/templateproject
+            cd ~/float-mode
             docker compose -f docker-compose.yaml pull
             docker compose -f docker-compose.yaml up -d
             

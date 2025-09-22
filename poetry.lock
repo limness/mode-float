@@ -14,7 +14,7 @@ files = [
 [[package]]
 name = "aiogram"
 version = "3.21.0"
-description = "Modern and fully asynchronous framework for Telegram Bot API"
+description = "Modern and fully asynchronous framework for API"
 optional = false
 python-versions = ">=3.9"
 files = [

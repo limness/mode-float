@@ -6,7 +6,7 @@ global:
   max_connection_lifetime: 5m
 
 target:
-  data_source_name: 'postgresql://postgres:postgres@postgres:5432/templateproject?sslmode=disable'
+  data_source_name: 'postgresql://postgres:postgres@postgres:5432/float-mode?sslmode=disable'
   collectors: [pg_*]
 
 collector_files: 
