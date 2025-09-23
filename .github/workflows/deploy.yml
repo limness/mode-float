@@ -50,15 +50,6 @@ jobs:
             echo "IMAGE_TAG=$IMAGE_TAG" > .env
             set -e
       
-            echo "Updating local secrets for project..."
-            if [ ! -d ~/project-secrets ]; then
-              git clone git@github.com:limness/project-secrets.git ~/project-secrets
-            else
-              cd ~/project-secrets && git pull origin main && cd ..
-            fi
-            rm -rf ~/float-mode/secrets
-            cp -r ~/project-secrets/float-mode ~/float-mode/secrets
-            
             echo "Recreating containers with updated config..."
             cd ~/float-mode
             docker compose -f docker-compose.yaml pull
