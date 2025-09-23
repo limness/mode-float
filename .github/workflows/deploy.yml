@@ -3,16 +3,6 @@ name: Deploy services
 on:
   push:
     branches: [ "dev" ]
-  workflow_dispatch:
-    inputs:
-      image_tag:
-        description: 'Docker image tag (SHA, latest, etc)'
-        required: true
-        default: 'latest'
-
-env:
-  IMAGE_NAME: ${{ secrets.DOCKER_REGISTRY_USER }}/float-mode
-  IMAGE_TAG: ${{ github.sha }}
 
 jobs:
   build-and-deploy:
@@ -37,8 +27,7 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
-            ${{ env.IMAGE_NAME }}:latest
+            ${{ secrets.DOCKER_REGISTRY_USER }}/float-mode:latest
 
       - name: Deploy to server
         uses: appleboy/ssh-action@v1.2.0
@@ -47,15 +36,7 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}
           password: ${{ secrets.DEPLOY_PASSWORD }}
           script: |
-            echo "IMAGE_TAG=$IMAGE_TAG" > .env
-            set -e
-      
-            echo "Recreating containers with updated config..."
-            cd ~/float-mode
-            docker compose -f docker-compose.yaml pull
-            docker compose -f docker-compose.yaml up -d
-            
-            echo "Cleaning up unused Docker images..."
-            docker image prune -f
-            
-            echo "✅ Deployment finished successfully!"
+            cd float-mode
+            sudo docker compose -f docker-compose.yaml -p float-mode-dev pull
+            sudo docker compose -f docker-compose.yaml -p float-mode-dev up -d
+            sudo docker image prune -f
