@@ -11,7 +11,7 @@ on:
         default: 'latest'
 
 env:
-  IMAGE_NAME: ghcr.io/${{ secrets.DOCKER_REGISTRY_USER }}/float-mode
+  IMAGE_NAME: ${{ secrets.DOCKER_REGISTRY_USER }}/float-mode
   IMAGE_TAG: ${{ github.sha }}
 
 jobs:
