@@ -1,0 +1,32 @@
+services:
+  backend:
+    image: andrewlimit/float-mode:latest
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost/health || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  postgres:
+    ports: []
+    volumes:
+      - "/var/lib/float-mode/pg:/var/lib/postgresql/data"
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+  nginx:
+    restart: always
+
+  oauth2-proxy:
+    command:
+      - --cookie-secure=true
+      - --redirect-url=https://app.example.com/oauth2/callback
+
+  keycloak:
+    command: ["start", "--hostname=kc.example.com", "--http-enabled=true"]

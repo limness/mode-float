@@ -19,6 +19,8 @@ ADD alembic ./alembic
 ADD logs ./logs
 ADD src ./src
 
+EXPOSE 8000/tcp
+
 # Add entrypoint.sh and grant execution permissions
 ADD entrypoint.sh .
 RUN chmod +x entrypoint.sh

@@ -37,6 +37,6 @@ jobs:
           password: ${{ secrets.DEPLOY_PASSWORD }}
           script: |
             cd float-mode
-            sudo docker compose -f docker-compose.yaml -p float-mode-dev pull
-            sudo docker compose -f docker-compose.yaml -p float-mode-dev up -d
+            sudo docker compose -f docker-compose.yml -p float-mode-prod pull
+            sudo docker compose -f docker-compose.yml --env-file $(ENV_FILE) -p float-mode-prod up -d
             sudo docker image prune -f

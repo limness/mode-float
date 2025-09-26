@@ -1,0 +1,203 @@
+version: '3.9'
+
+networks:
+  float-net:
+    driver: bridge
+
+volumes:
+  prometheus-data:
+  alertmanager-data:
+
+services:
+  # --- core ---
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-float-mode}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - '${PG_PORT:-5432}:5432'
+    volumes:
+      - './data/postgres:/var/lib/postgresql/data'
+    networks:
+      - float-net
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d float-mode']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    profiles:
+      - core
+
+  migration:
+    build: .
+    command: sh -c 'poetry run alembic upgrade head'
+    volumes:
+      - './alembic/versions:/float-mode/alembic/versions'
+    environment:
+      POSTGRES_URI: ${POSTGRES_URI:-postgresql+asyncpg://postgres:postgres@postgres:5432/float-mode}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - float-net
+    profiles:
+      - core
+
+  backend:
+    build: .
+    environment:
+      POSTGRES_URI: 'postgresql+asyncpg://postgres:postgres@postgres:5432/float-mode'
+    restart: always
+    networks:
+      - float-net
+    volumes:
+      - './alembic/versions:/float-mode/alembic/versions'
+      - './logs:/float-mode/logs'
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - '80:8000'
+    profiles:
+      - core
+
+  # --- monitoring ---
+  prometheus:
+    image: docker.io/prom/prometheus:v3.5.0
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yaml'
+      - '--storage.tsdb.retention.time=${PROM_RETENTION_TIME:-7d}'
+      - '--storage.tsdb.retention.size=${PROM_RETENTION_SIZE:-5GB}'
+    volumes:
+      - './config/prometheus.yaml:/etc/prometheus/prometheus.yaml:ro'
+      - './config/alert.rules.yaml:/etc/prometheus/alert.rules.yaml:ro'
+      - 'prometheus-data:/prometheus'
+    restart: always
+    ports:
+      - '${PROM_PORT:-9090}:9090'
+    networks:
+      - float-net
+    profiles:
+      - monitoring
+
+  alertmanager:
+    image: quay.io/prometheus/alertmanager:v0.28.1
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yaml'
+      - '--storage.path=/alertmanager'
+    volumes:
+      - './config/alertmanager.yaml:/etc/alertmanager/alertmanager.yaml:ro'
+      - './config/telegram.tmpl:/etc/alertmanager/telegram.tmpl:ro'
+      - 'alertmanager-data:/alertmanager'
+    restart: always
+    ports:
+      - '${ALERT_PORT:-9093}:9093'
+    networks:
+      - float-net
+    profiles:
+      - monitoring
+
+  node_exporter:
+    image: quay.io/prometheus/node-exporter:v1.9.1
+    command: '--path.rootfs=/host'
+    pid: host
+    restart: always
+    volumes:
+      - '/:/host:ro'
+    ports:
+      - '${NODE_EXP_PORT:-9100}:9100'
+    networks:
+      - float-net
+    profiles:
+      - monitoring
+
+  postgres_exporter:
+    image: quay.io/prometheuscommunity/postgres-exporter:v0.17.1
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - '${PG_EXP_PORT:-9187}:9187'
+    networks:
+      - float-net
+    profiles:
+      - monitoring
+
+  sql_exporter:
+    image: burningalchemist/sql_exporter:0.18
+    restart: always
+    command:
+      - '--config.file=/etc/sql_exporter/config.yaml'
+    volumes:
+      - './config/sql_exporter.yaml:/etc/sql_exporter/config.yaml:ro'
+      - './config/pg_app.collector.yaml:/etc/sql_exporter/pg_app.collector.yaml:ro'
+    env_file:
+      - .env.dev
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - '${SQL_EXP_PORT:-9399}:9399'
+    networks:
+      - float-net
+    profiles:
+      - monitoring
+
+  # --- auth ---
+  nginx:
+    image: nginx:1.25
+    ports:
+      - '80:80'
+    restart: always
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - oauth2-proxy
+    networks:
+      - float-net
+    profiles:
+      - auth
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:25.0
+    command: ['start-dev', '--http-port=8080', '--import-realm']
+    environment:
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
+    volumes:
+      - ./keycloak-data:/opt/keycloak/data
+      - ./keycloak:/opt/keycloak/data/import
+    ports:
+      - '8080:8080'
+    networks:
+      - float-net
+    profiles:
+      - auth
+
+  oauth2-proxy:
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.6.0
+    restart: always
+    command:
+      - --provider=keycloak-oidc
+      - --oidc-issuer-url=http://keycloak:8080/realms/${OAUTH2_REALMS}
+      - --client-id=${OAUTH2_CLIENT_ID:-nginx-client}
+      - --client-secret=${OAUTH2_CLIENT_SECRET}
+      - --cookie-secret=${OAUTH2_COOKIE_SECRET}
+      - --http-address=0.0.0.0:4180
+      - --redirect-url=http://localhost/oauth2/callback
+      - --email-domain=*
+      - --upstream=static://200
+      - --pass-authorization-header=true
+      - --set-authorization-header=true
+      - --set-xauthrequest=true
+      - --insecure-oidc-allow-unverified-email=true
+      - --pass-access-token=true
+    ports:
+      - '4180:4180'
+    networks:
+      - float-net
+    profiles:
+      - auth

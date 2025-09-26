@@ -23,6 +23,8 @@ httpx = "^0.28.1"
 prometheus-client = "^0.22.1"
 aiohttp = "^3.12.14"
 openai = "^1.98.0"
+fastapi = "^0.117.1"
+uvicorn = "^0.37.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^25.1.0"

@@ -1,21 +1,64 @@
 PYTHON_VERSION := 3.12
-CODE_PATH = src
+CODE_PATH      ?= src
+
+ENV            ?= dev
+ENV_FILE       ?= .env.$(ENV)
+PROJECT        ?= float-$(ENV)
+COMPOSE        ?= docker compose
+COMPOSE_FILE   ?= docker-compose.yml
+DC             := $(COMPOSE) -f $(COMPOSE_FILE) --env-file $(ENV_FILE) -p $(PROJECT)
 
 ifeq ($(OS),Windows_NT)
-    POETRY := poetry
+  POETRY := poetry
 else
-    POETRY := $(shell command -v poetry 2> /dev/null || echo poetry)
+  POETRY := $(shell command -v poetry 2> /dev/null || echo poetry)
 endif
+
 INSTALL_STAMP := .install.stamp
 
+app-dev:
+	ENV=dev $(DC) --profile core up -d
 
+app-prod:
+	ENV=prod $(DC) --profile core up -d
+
+mon-dev:
+	ENV=dev $(DC) --profile monitoring up -d
+
+mon-prod:
+	ENV=prod $(DC) --profile monitoring up -d
+
+auth-dev:
+	ENV=dev $(DC) --profile auth up -d
+
+auth-prod:
+	ENV=prod $(DC) --profile auth up -d
+
+down:
+	$(DC) down
+
+
+.PHONY: docker-upgrade docker-downgrade docker-migrate
+docker-upgrade:
+	$(DC_ALL) run --rm $(APP_SERVICE) bash -c "poetry run alembic upgrade head"
+
+
+docker-downgrade:
+	$(DC_ALL) run --rm $(APP_SERVICE) bash -c "poetry run alembic downgrade -1"
+
+
+docker-migrate:
+	@if [ -z "$(m)" ]; then echo "Specify migration name via m=..."; exit 1; fi
+	$(DC_ALL) run --rm $(APP_SERVICE) bash -c "poetry run alembic revision --autogenerate -m '$(m)'"
+
+
+.PHONY: activate-env uvicorn install format check
 activate-env:
 	@$(POETRY) env activate || true
 
 
-.PHONY: run
 uvicorn: install
-	poetry run python -m src.main
+	$(POETRY) run python -m $(CODE_PATH).main
 
 
 install: $(INSTALL_STAMP)
@@ -25,53 +68,12 @@ $(INSTALL_STAMP): pyproject.toml
 	touch $(INSTALL_STAMP)
 
 
-.PHONY: format
 format: activate-env install
 	$(POETRY) run ruff check --select I --fix $(CODE_PATH)
 	$(POETRY) run ruff format $(CODE_PATH)
 	$(POETRY) run ruff check --fix $(CODE_PATH)
 
 
-.PHONY: check
 check: activate-env install
-	$(POETRY) run ruff check --select I --output-format=full --show-fixes -n $(CODE_PATH) || true
+	-$(POETRY) run ruff check --select I --output-format=full --show-fixes -n $(CODE_PATH)
 	$(POETRY) run ruff format --check $(CODE_PATH)
-
-
-.PHONY: docker-run
-docker-run:
-	docker-compose up -d
-
-
-.PHONY: docker-run-deps
-docker-run-deps:
-	docker-compose up --scale app=0 --scale kudago_worker=0 -d
-
-
-.PHONY: docker-upgrade
-docker-upgrade:
-	docker compose run app bash -c "poetry run alembic upgrade head"
-
-
-.PHONY: docker-downgrade
-docker-downgrade:
-	docker compose run app bash -c "poetry run alembic downgrade -1"
-
-
-.PHONY: docker-migrate
-docker-migrate:
-	@if [ -z "$(m)" ]; then \
-		echo "Specify name of migration"; \
-		exit 1; \
-	fi
-	docker compose run --rm app bash -c "poetry run alembic revision --autogenerate -m '$(m)'"
-
-
-.PHONY: docker-bash
-docker-bash:
-	docker compose run --rm app bash
-
-
-.PHONY: alembic-migrate
-alembic-migrate:
-	poetry run alembic revision --autogenerate -m '$(m)'

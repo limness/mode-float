@@ -7,13 +7,11 @@ __all__ = [
     'LOGGING_CONFIG',
     'application_settings',
     'postgres_settings',
-    'matching_settings',
-    'parser_settings',
 ]
 
 
 class BaseConfigSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_file='.env', extra='ignore')
+    model_config = SettingsConfigDict(env_file='.env.dev', extra='ignore')
 
 
 class ApplicationSettings(BaseConfigSettings):
@@ -27,24 +25,8 @@ class ApplicationSettings(BaseConfigSettings):
     APP_DEFAULT_USER_ID: int = 0
     APP_PROMETHEUS_HOST: str = '0.0.0.0'
     APP_PROMETHEUS_PORT: int = 8000
+    APP_ALLOWED_ORIGINS: list[str] = []
     APP_TIMEZONE: ZoneInfo = ZoneInfo('Europe/Moscow')
-
-
-class ParserSettings(BaseConfigSettings):
-    PARSER_DEFAULT_USER_ID: int = 0
-    PARSER_DEFAULT_USER_NAME: str = ''
-    PARSER_UPDATE_TIME: int = 300
-    PARSER_LOCATION: str = 'msk'
-    PARSER_TIMEZONE: ZoneInfo = ZoneInfo('Europe/Moscow')
-
-    TG_API_ID: int = -1
-    TG_API_HASH: str = ''
-    OPENAI_API_KEY: str = ''
-
-
-class MatchingSettings(BaseConfigSettings):
-    WINDOW_SIZE: int = 1000  # TODO: Change name to MATCHING_WINDOW_SIZE
-    BATCH_SIZE: int = 5  # TODO: Change name to MATCHING_BUFFER_SIZE
 
 
 class PostgresDBSettings(BaseConfigSettings):
@@ -104,8 +86,4 @@ LOGGING_CONFIG = {
 
 application_settings = ApplicationSettings()
 
-parser_settings = ParserSettings()
-
 postgres_settings = PostgresDBSettings()
-
-matching_settings = MatchingSettings()

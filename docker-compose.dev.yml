@@ -1,0 +1,20 @@
+services:
+  backend:
+    ports:
+      - '8000:80'
+    restart: unless-stopped
+
+  keycloak:
+    ports:
+      - '8080:8080'
+
+  oauth2-proxy:
+    ports:
+      - '4180:4180'
+
+  prometheus:
+    ports: []
+
+  nginx:
+    ports:
+      - '80:80'
