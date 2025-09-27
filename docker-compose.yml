@@ -28,6 +28,7 @@ services:
       timeout: 3s
       retries: 20
     profiles:
+      - all
       - core
 
   migration:
@@ -43,6 +44,7 @@ services:
     networks:
       - float-net
     profiles:
+      - all
       - core
 
   backend:
@@ -61,6 +63,7 @@ services:
     ports:
       - '80:8000'
     profiles:
+      - all
       - core
 
   # --- monitoring ---
@@ -80,6 +83,7 @@ services:
     networks:
       - float-net
     profiles:
+      - all
       - monitoring
 
   alertmanager:
@@ -97,6 +101,7 @@ services:
     networks:
       - float-net
     profiles:
+      - all
       - monitoring
 
   node_exporter:
@@ -111,6 +116,7 @@ services:
     networks:
       - float-net
     profiles:
+      - all
       - monitoring
 
   postgres_exporter:
@@ -124,6 +130,7 @@ services:
     networks:
       - float-net
     profiles:
+      - all
       - monitoring
 
   sql_exporter:
@@ -144,6 +151,7 @@ services:
     networks:
       - float-net
     profiles:
+      - all
       - monitoring
 
   # --- auth ---
@@ -160,6 +168,7 @@ services:
     networks:
       - float-net
     profiles:
+      - all
       - auth
 
   keycloak:
@@ -176,6 +185,7 @@ services:
     networks:
       - float-net
     profiles:
+      - all
       - auth
 
   oauth2-proxy:
@@ -201,4 +211,5 @@ services:
     networks:
       - float-net
     profiles:
+      - all
       - auth
