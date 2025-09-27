@@ -1,6 +1,11 @@
 services:
+  migration:
+    image: andrewlimit/float-mode:latest
+    build: null
+
   backend:
     image: andrewlimit/float-mode:latest
+    build: null
     deploy:
       resources:
         limits:

@@ -73,7 +73,7 @@ services:
     volumes:
       - './config/prometheus.yaml:/etc/prometheus/prometheus.yaml:ro'
       - './config/alert.rules.yaml:/etc/prometheus/alert.rules.yaml:ro'
-      - 'prometheus-data:/prometheus'
+      - './data/prometheus:/prometheus'
     restart: always
     ports:
       - '${PROM_PORT:-9090}:9090'
@@ -90,7 +90,7 @@ services:
     volumes:
       - './config/alertmanager.yaml:/etc/alertmanager/alertmanager.yaml:ro'
       - './config/telegram.tmpl:/etc/alertmanager/telegram.tmpl:ro'
-      - 'alertmanager-data:/alertmanager'
+      - './data/alertmanager:/alertmanager'
     restart: always
     ports:
       - '${ALERT_PORT:-9093}:9093'
@@ -135,7 +135,7 @@ services:
       - './config/sql_exporter.yaml:/etc/sql_exporter/config.yaml:ro'
       - './config/pg_app.collector.yaml:/etc/sql_exporter/pg_app.collector.yaml:ro'
     env_file:
-      - .env.dev
+      - .env.prod
     depends_on:
       postgres:
         condition: service_healthy
@@ -154,6 +154,7 @@ services:
     restart: always
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
     depends_on:
       - oauth2-proxy
     networks:
@@ -168,8 +169,8 @@ services:
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
     volumes:
-      - ./keycloak-data:/opt/keycloak/data
-      - ./keycloak:/opt/keycloak/data/import
+      - ./data/keycloak:/opt/keycloak/data
+      - ./data/keycloak-import:/opt/keycloak/data/import
     ports:
       - '8080:8080'
     networks:
