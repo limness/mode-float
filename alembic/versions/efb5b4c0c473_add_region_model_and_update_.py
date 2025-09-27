@@ -124,7 +124,8 @@ def downgrade() -> None:
         batch_op.drop_column("distance_km")
         batch_op.drop_column("landing_region_id")
         batch_op.drop_column("takeoff_region_id")
-        batch_op.drop_column("region_region_id")
+        if "region_region_id" in [c["name"] for c in sa.inspect(op.get_bind()).get_columns("uav_flights")]:
+            batch_op.drop_column("region_region_id")
         batch_op.drop_column("duration_seconds")
         batch_op.drop_column("date")
         batch_op.drop_column("landing_datetime")
