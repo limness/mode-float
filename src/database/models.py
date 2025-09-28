@@ -86,6 +86,9 @@ class UavFlightModel(Base):
     landing_region_id: Mapped[Optional[int]] = mapped_column(
         ForeignKey("regions.id"), nullable=True
     )
+    region_region_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("regions.id"), nullable=True
+    )
 
     distance_km: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     average_speed_kmh: Mapped[Optional[float]
