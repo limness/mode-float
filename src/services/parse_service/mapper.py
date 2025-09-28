@@ -1,22 +1,22 @@
 from typing import Optional, Protocol, Tuple, Any, List
 import pandas as pd
-import holidays
 import re
 
-from flight import Flight
-from geocoder import Geocoder
+from math import radians, sin, cos, sqrt, atan2
+
+from src.database.models import UavFlightModel
+from .geocoder import Geocoder
 
 
 class Mapper(Protocol):
-    def map_row(self, row: pd.Series) -> Flight: ...
+    def map_row(self, row: pd.Series) -> UavFlightModel: ...
 
 
 class DefaultMapper(Mapper):
     def __init__(self, geocoder: Geocoder):
         self.geocoder = geocoder
-        self.holidays = holidays.RU()
 
-    def map_row(self, row: pd.Series) -> Flight:
+    def map_row(self, row: pd.Series) -> UavFlightModel:
         city = row.get("Центр ЕС ОрВД", "")
         raw_shr = row.get("SHR", "")
         raw_dep = row.get("DEP", "")
@@ -49,26 +49,50 @@ class DefaultMapper(Mapper):
         arr_time = self._make_timestamp(
             dof, self._extract(raw_arr, r"-ATA\s+(\d{4})"))
 
+        date = None
+        if dep_time is not None:
+            date = dep_time
+        elif arr_time is not None:
+            date = arr_time
+
         duration = None
         if dep_time is not None and arr_time is not None:
-            duration = arr_time - dep_time
+            duration = (arr_time - dep_time).seconds / 60
 
-        is_weekend = dep_time and dep_time.weekday() >= 5
-        is_holiday = dep_time and dep_time.date() in self.holidays
+        takeoff_lat, takeoff_lon = None, None
+        landing_lat, landing_lon = None, None
+        latitude, longitude = None, None
+        if landing_coords is not None:
+            landing_lat, landing_lon = landing_coords
+            latitude, longitude = landing_lat, landing_lon
+        if takeoff_coords is not None:
+            takeoff_lat, takeoff_lon = takeoff_coords
+            latitude, longitude = takeoff_coords
 
-        return Flight(
+        distance_km = None
+        if landing_coords is not None and takeoff_coords is not None:
+            distance_km = self._haversine(
+                takeoff_lat, takeoff_lon, landing_lat, landing_lon)
+        average_speed_kmh = None
+        if distance_km is not None and duration > 0:
+            average_speed_kmh = distance_km / duration * 60
+
+        return UavFlightModel(
             flight_id=sid,
             uav_type=uav_type,
-            takeoff_coords=takeoff_coords,
-            landing_coords=landing_coords,
-            dep_datetime=dep_time,
-            arr_datetime=arr_time,
-            duration=duration,
-            route_points=route_points or None,
+            takeoff_lat=takeoff_lat,
+            takeoff_lon=takeoff_lon,
+            landing_lat=landing_lat,
+            landing_lon=landing_lon,
+            latitude=latitude,
+            longitude=longitude,
+            takeoff_datetime=dep_time,
+            landing_datetime=arr_time,
+            date=date,
+            duration_minutes=duration,
             city=city,
-            is_weekend=is_weekend,
-            is_holiday=is_holiday,
-            raw=row.to_dict()
+            distance_km=distance_km,
+            average_speed_kmh=average_speed_kmh,
         )
 
     def _extract(self, text: Any, pattern: str) -> Optional[str]:
@@ -80,3 +104,17 @@ class DefaultMapper(Mapper):
         if yymmdd and hhmm:
             return pd.to_datetime(yymmdd + hhmm, format="%y%m%d%H%M", errors="coerce")
         return None
+
+    def _haversine(self, lat1, lon1, lat2, lon2):
+        R = 6371.0
+
+        lat1, lon1, lat2, lon2 = map(radians, [lat1, lon1, lat2, lon2])
+
+        dlat = lat2 - lat1
+        dlon = lon2 - lon1
+
+        a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
+        c = 2 * atan2(sqrt(a), sqrt(1 - a))
+
+        distance = R * c
+        return distance
