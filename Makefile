@@ -4,6 +4,7 @@ CODE_PATH      ?= src
 ENV            ?= dev
 ENV_FILE       ?= .env.$(ENV)
 PROJECT        ?= float-$(ENV)
+APP_SERVICE    ?= backend
 COMPOSE        ?= docker compose
 COMPOSE_FILE   ?= docker-compose.yml
 DC             := $(COMPOSE) -f $(COMPOSE_FILE) --env-file $(ENV_FILE) -p $(PROJECT)
@@ -40,16 +41,16 @@ down:
 
 .PHONY: docker-upgrade docker-downgrade docker-migrate
 docker-upgrade:
-	$(DC_ALL) run --rm $(APP_SERVICE) bash -c "poetry run alembic upgrade head"
+	$(DC) run --rm $(APP_SERVICE) bash -c "poetry run alembic upgrade head"
 
 
 docker-downgrade:
-	$(DC_ALL) run --rm $(APP_SERVICE) bash -c "poetry run alembic downgrade -1"
+	$(DC) run --rm $(APP_SERVICE) bash -c "poetry run alembic downgrade -1"
 
 
 docker-migrate:
 	@if [ -z "$(m)" ]; then echo "Specify migration name via m=..."; exit 1; fi
-	$(DC_ALL) run --rm $(APP_SERVICE) bash -c "poetry run alembic revision --autogenerate -m '$(m)'"
+	$(DC) run --rm $(APP_SERVICE) bash -c "poetry run alembic revision --autogenerate -m '$(m)'"
 
 
 .PHONY: activate-env uvicorn install format check

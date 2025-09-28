@@ -1,18 +1,3 @@
-from src.services.event_service import (
-    create_event,
-    create_event_request,
-    delete_event,
-    delete_event_request,
-    format_event_message,
-    get_event,
-    get_event_request,
-    get_user_events,
-    is_user_participant,
-    join_event,
-    leave_event,
-    mark_event_as_seen,
-    validate_join_event,
-)
 from src.services.file_service import (
     create_file,
     get_file,
@@ -26,6 +11,21 @@ from src.services.third_party_event_service import (
     create_third_party_event,
     delete_past_third_party_events,
     get_third_party_event,
+)
+from src.services.uav_service import (
+    create_event,
+    create_event_request,
+    delete_event,
+    delete_event_request,
+    format_event_message,
+    get_event,
+    get_event_request,
+    get_user_events,
+    is_user_participant,
+    join_event,
+    leave_event,
+    mark_event_as_seen,
+    validate_join_event,
 )
 from src.services.user_service import (
     create_user,
