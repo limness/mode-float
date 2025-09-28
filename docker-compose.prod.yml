@@ -2,6 +2,7 @@ services:
   migration:
     image: andrewlimit/float-mode:latest
     build: null
+    volumes: []
 
   backend:
     image: andrewlimit/float-mode:latest
@@ -27,11 +28,32 @@ services:
 
   nginx:
     restart: always
+    ports:
+      - '80:80'
+      - '443:443'
+#    volumes:
+#      - ./nginx.conf:/etc/nginx/nginx.conf:ro
 
   oauth2-proxy:
     command:
-      - --cookie-secure=true
-      - --redirect-url=https://app.example.com/oauth2/callback
+      - --provider=keycloak-oidc
+      - --oidc-issuer-url=https://fly-potato.ru/sso/realms/${OAUTH2_REALMS}
+      - --client-id=${OAUTH2_CLIENT_ID:-nginx-client}
+      - --client-secret=${OAUTH2_CLIENT_SECRET}
+      - --cookie-secret=${OAUTH2_COOKIE_SECRET}
+      - --http-address=0.0.0.0:4180
+      - --redirect-url=https://fly-potato.ru/oauth2/callback
+      - --email-domain=*
+      - --upstream=static://200
+      - --pass-authorization-header=true
+      - --set-authorization-header=true
+      - --set-xauthrequest=true
+      - --insecure-oidc-allow-unverified-email=true
+      - --pass-access-token=true
 
   keycloak:
-    command: ["start", "--hostname=kc.example.com", "--http-enabled=true"]
+    environment:
+      KC_PROXY: 'edge'
+      KC_HOSTNAME: 'fly-potato.ru'
+      KC_HTTP_RELATIVE_PATH: '/sso'
+      KC_HTTP_ENABLED: 'true'

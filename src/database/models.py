@@ -37,9 +37,6 @@ class Region(Base):
     landing_flights: Mapped[list["UavFlightModel"]] = relationship(
         "UavFlightModel", foreign_keys="UavFlightModel.landing_region_id", back_populates="landing_region"
     )
-    region_flights: Mapped[list["UavFlightModel"]] = relationship(
-        "UavFlightModel", foreign_keys="UavFlightModel.region_region_id", back_populates="region_region"
-    )
 
     __table_args__ = (
         Index("ix_regions_geopolygon_gist",
@@ -51,8 +48,7 @@ class UavFlightModel(Base):
     __tablename__ = "uav_flights"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    flight_id: Mapped[str] = mapped_column(
-        String(128), unique=True, nullable=True)
+    flight_id: Mapped[str] = mapped_column(String(64), unique=True, nullable=True)
     uav_type: Mapped[str] = mapped_column(String(64), nullable=True)
 
     takeoff_point: Mapped[Geometry] = mapped_column(
@@ -86,9 +82,6 @@ class UavFlightModel(Base):
     landing_region_id: Mapped[Optional[int]] = mapped_column(
         ForeignKey("regions.id"), nullable=True
     )
-    region_region_id: Mapped[Optional[int]] = mapped_column(
-        ForeignKey("regions.id"), nullable=True
-    )
 
     distance_km: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     average_speed_kmh: Mapped[Optional[float]
@@ -99,9 +92,6 @@ class UavFlightModel(Base):
     )
     landing_region: Mapped[Optional["Region"]] = relationship(
         "Region", foreign_keys=[landing_region_id], back_populates="landing_flights"
-    )
-    region_region: Mapped[Optional["Region"]] = relationship(
-        "Region", foreign_keys=[region_region_id], back_populates="region_flights"
     )
 
     __table_args__ = (
