@@ -1,4 +1,4 @@
-from src.database.models import FileMetadataModel
+from backend.database.models import FileMetadataModel
 
 from .base_repository import BaseRepository
 

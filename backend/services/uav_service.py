@@ -4,9 +4,9 @@ from typing import Any
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.database.models import RegionModel, UavFlightModel
-from src.repositories.uav_repository import region_repo, uav_flight_repo
-from src.services.exceptions import RegionCreateError, UavFlightCreateError
+from backend.database.models import RegionModel, UavFlightModel
+from backend.repositories.uav_repository import region_repo, uav_flight_repo
+from backend.services.exceptions import RegionCreateError, UavFlightCreateError
 
 
 async def create_region(

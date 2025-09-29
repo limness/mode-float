@@ -2,7 +2,7 @@ import logging
 
 from prometheus_client import Counter
 
-from src.metrics.enums import RegMetricNameEnum
+from backend.metrics.enums import RegMetricNameEnum
 
 logger = logging.getLogger(__name__)
 

@@ -3,7 +3,7 @@ from typing import Any, Generic, List, Optional, TypeVar
 from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.database.base import Base
+from backend.database.base import Base
 
 T = TypeVar('T')
 

@@ -1,18 +1,18 @@
-# from src.services.file_service import (
+# from backend.services.file_service import (
 #     create_file,
 #     get_file,
 #     get_file_by_telegram_id,
 #     get_file_by_url,
 #     update_file_id,
 # )
-# from src.services.matching_service import match_event
-# from src.services.metric_service import create_metric
-# from src.services.third_party_event_service import (
+# from backend.services.matching_service import match_event
+# from backend.services.metric_service import create_metric
+# from backend.services.third_party_event_service import (
 #     create_third_party_event,
 #     delete_past_third_party_events,
 #     get_third_party_event,
 # )
-# from src.services.uav_service import (
+# from backend.services.uav_service import (
 #     create_event,
 #     create_event_request,
 #     delete_event,
@@ -27,7 +27,7 @@
 #     mark_event_as_seen,
 #     validate_join_event,
 # )
-# from src.services.user_service import (
+# from backend.services.user_service import (
 #     create_user,
 #     ensure_default_user,
 #     get_user,

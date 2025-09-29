@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy.ext.declarative import declarative_base
 
-from src.core.settings import postgres_settings
+from backend.core.settings import postgres_settings
 
 __all__ = ['Base', 'db_manager', 'get_database']
 

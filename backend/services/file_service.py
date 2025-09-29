@@ -5,9 +5,9 @@ from typing import Any
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.database.models import FileMetadataModel
-from src.repositories.file_repository import file_metadata_repo
-from src.services.exceptions import FileCreateError, FileDeactivateError, ServiceError
+from backend.database.models import FileMetadataModel
+from backend.repositories.file_repository import file_metadata_repo
+from backend.services.exceptions import FileCreateError, FileDeactivateError, ServiceError
 
 
 async def deactivate_old_files(

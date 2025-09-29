@@ -1,4 +1,4 @@
-from src.database.models import RegionModel, UavFlightModel
+from backend.database.models import RegionModel, UavFlightModel
 
 from .base_repository import BaseRepository
 

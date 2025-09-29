@@ -1,20 +1,20 @@
-from src.utils.callback_schema import (
+from backend.utils.callback_schema import (
     build_callback_data,
     build_callback_filter_mask,
     parse_callback_data,
 )
-from src.utils.file_tools import (
+from backend.utils.file_tools import (
     answer_file,
     fetch_message_file,
     get_file_input_media,
 )
-from src.utils.keyboards import (
+from backend.utils.keyboards import (
     build_event_keyboard,
     build_interests_keyboard,
     build_joined_keyboard,
 )
-from src.utils.links import create_calendar_link, create_invite_link
-from src.utils.markdown import entities_to_markdown, escape_md
+from backend.utils.links import create_calendar_link, create_invite_link
+from backend.utils.markdown import entities_to_markdown, escape_md
 
 __all__ = [
     # Callback Schema

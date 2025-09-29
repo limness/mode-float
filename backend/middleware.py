@@ -8,7 +8,7 @@ from fastapi import Depends, HTTPException, Request, Response, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from src.core.settings import keycloak_settings
+from backend.core.settings import keycloak_settings
 
 logger = logging.getLogger(__name__)
 

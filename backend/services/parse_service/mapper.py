@@ -6,7 +6,7 @@ from zoneinfo import ZoneInfo
 
 import pandas as pd
 
-from src.database.models import UavFlightModel
+from backend.database.models import UavFlightModel
 
 from .geocoder import Geocoder
 

@@ -1,5 +1,5 @@
 PYTHON_VERSION := 3.12
-CODE_PATH      ?= src
+CODE_PATH      ?= backend
 
 ENV            ?= dev
 ENV_FILE       ?= .env.$(ENV)

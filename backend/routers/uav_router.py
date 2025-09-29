@@ -13,21 +13,21 @@ from fastapi import (
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.database.base import get_database
-from src.exc import IDException
-from src.schemas.file_schema import FileUploadResponseSchema
-from src.services.exceptions import (
+from backend.database.base import get_database
+from backend.exc import IDException
+from backend.schemas.file_schema import FileUploadResponseSchema
+from backend.services.exceptions import (
     FileCreateError,
     FileDeactivateError,
     ServiceError,
     UavFlightCreateError,
 )
-from src.services.file_service import create_file_metadata, deactivate_old_files, update_file_status
-from src.services.parse_service.geocoder import DefaultGeocoder
-from src.services.parse_service.loader import ExcelLoader
-from src.services.parse_service.mapper import DefaultMapper
-from src.services.parse_service.mapper import UavFlightModel as ParsedUavFlight
-from src.services.uav_service import create_uav_flight
+from backend.services.file_service import create_file_metadata, deactivate_old_files, update_file_status
+from backend.services.parse_service.geocoder import DefaultGeocoder
+from backend.services.parse_service.loader import ExcelLoader
+from backend.services.parse_service.mapper import DefaultMapper
+from backend.services.parse_service.mapper import UavFlightModel as ParsedUavFlight
+from backend.services.uav_service import create_uav_flight
 
 router = APIRouter(tags=['Files'])
 

@@ -1,12 +1,33 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.core.settings import application_settings
-from src.routers.uav_router import router as uav_router
+import os
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import JSONResponse, FileResponse
+
+from backend.core.settings import application_settings
+from backend.routers.uav_router import router as uav_router
 
 
 def _include_routers(app: FastAPI):
     app.include_router(uav_router, prefix='/api/v1/uav')
+
+
+def _mount(app: FastAPI):
+    class SPAStaticFiles(StaticFiles):
+        async def get_response(self, path: str, scope):
+            full_path, stat_result = self.lookup_path(path)
+            if stat_result:
+                return await super().get_response(path, scope)
+
+            index_file = os.path.join(self.directory, 'index.html')
+            return FileResponse(index_file)
+
+    app.mount(
+        "/",
+        SPAStaticFiles(directory=os.path.join(os.path.dirname(__file__), "./static"), html=True),
+        name="static",
+    )
 
 
 def _configure_middlewares(app: FastAPI):
@@ -39,5 +60,6 @@ def create_app() -> FastAPI:
         swagger_ui_parameters={'displayRequestDuration': True},
     )
     _configure_middlewares(app)
+    _mount(app)
     _include_routers(app)
     return app

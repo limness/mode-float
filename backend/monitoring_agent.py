@@ -3,7 +3,7 @@ import logging
 from aiohttp import web
 from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 
-from src.core.settings import application_settings
+from backend.core.settings import application_settings
 
 logger = logging.getLogger(__name__)
 

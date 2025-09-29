@@ -2,7 +2,7 @@
 #
 # from prometheus_client import Counter
 #
-# from src.metrics.enums import EventCreationMetricNameEnum, EventMetricNameEnum
+# from backend.metrics.enums import EventCreationMetricNameEnum, EventMetricNameEnum
 #
 # logger = logging.getLogger(__name__)
 #

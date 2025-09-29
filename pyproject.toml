@@ -89,7 +89,7 @@ section-order = [
     'local-folder',
 ]
 known-first-party = [
-    'src',
+    'backend',
 ]
 
 [tool.mypy]
@@ -108,7 +108,7 @@ plugins = [
     "pydantic.mypy",
 ]
 exclude = [
-    "src/routers/.*", # TODO: REMOVE THIS WHEN SOMEONE HAS FINISHED THIS MODULE
+    "backend/routers/.*", # TODO: REMOVE THIS WHEN SOMEONE HAS FINISHED THIS MODULE
     "\\.venv",
     "alembic/.*",
     "scripts/.*"
@@ -120,7 +120,7 @@ disallow_untyped_defs = false
 disallow_incomplete_defs = false
 
 [[tool.mypy.overrides]] # TODO: REMOVE THIS WHEN SOMEONE HAS FINISHED THIS MODULE
-module = "src.routers.*"
+module = "backend.routers.*"
 follow_imports = "skip"
 
 [[tool.mypy.overrides]]
