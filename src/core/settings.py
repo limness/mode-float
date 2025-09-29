@@ -33,6 +33,12 @@ class PostgresDBSettings(BaseConfigSettings):
     POSTGRES_URI: str = 'None'
 
 
+class KeycloakSettings(BaseConfigSettings):
+    KEYCLOAK_URL: str
+    KEYCLOAK_REALM: str
+    KEYCLOAK_CLIENT_ID: str
+
+
 LOGGING_CONFIG = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -87,3 +93,5 @@ LOGGING_CONFIG = {
 application_settings = ApplicationSettings()
 
 postgres_settings = PostgresDBSettings()
+
+keycloak_settings = KeycloakSettings()

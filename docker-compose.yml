@@ -49,6 +49,8 @@ services:
 
   backend:
     build: .
+    env_file:
+      - .env.dev
     environment:
       POSTGRES_URI: 'postgresql+asyncpg://postgres:postgres@postgres:5432/float-mode'
     restart: always
@@ -61,7 +63,7 @@ services:
       postgres:
         condition: service_healthy
     ports:
-      - ':8000'
+      - '8073:8000'
     profiles:
       - all
       - core
@@ -141,8 +143,6 @@ services:
     volumes:
       - './config/sql_exporter.yaml:/etc/sql_exporter/config.yaml:ro'
       - './config/pg_app.collector.yaml:/etc/sql_exporter/pg_app.collector.yaml:ro'
-    env_file:
-      - .env.prod
     depends_on:
       postgres:
         condition: service_healthy

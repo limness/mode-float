@@ -1,24 +1,12 @@
-
-from fastapi import Depends, FastAPI
-
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-
 from src.core.settings import application_settings
-
-
-# from src.routers.user_router import app as user_router
-# from src.routers.auth_router import app as auth_router
-# from src.core.settings import application_settings
-# from src.core.database import postgres_async_engine
-# from src.models import oauth_model, user_model
-# from src.exc import app_unexpected_handler
+from src.routers.uav_router import router as uav_router
 
 
 def _include_routers(app: FastAPI):
-    # app.include_router(user_router, prefix="/api/v1/users")
-    ...
+    app.include_router(uav_router, prefix='/api/v1/uav')
 
 
 def _configure_middlewares(app: FastAPI):
@@ -36,6 +24,10 @@ def _configure_middlewares(app: FastAPI):
             'Authorization',
         ],
     )
+    # app.add_middleware(
+    #     JWTMiddleware,
+    #     exclude_paths=['/docs', '/openapi.json', '/health']
+    # )
 
 
 def create_app() -> FastAPI:
@@ -46,27 +38,6 @@ def create_app() -> FastAPI:
         description='Tools for working with the Float Mode ID via the HTTP REST protocol',
         swagger_ui_parameters={'displayRequestDuration': True},
     )
-    security = HTTPBearer()
-
-    @app.get('/api/me')
-    def me(creds: HTTPAuthorizationCredentials = Depends(security)):
-        claims = verify(creds)
-        return {'sub': claims['sub'], 'roles': claims.get('realm_access', {}).get('roles', [])}
-
     _configure_middlewares(app)
     _include_routers(app)
     return app
-
-
-def verify(creds: HTTPAuthorizationCredentials):
-    try:
-        print('creds.credentials', creds.credentials)
-        return jwt.decode(
-            creds.credentials,
-            jwks(),
-            algorithms=['RS256'],
-            audience=AUD,
-            issuer=ISSUER,
-        )
-    except Exception:
-        raise HTTPException(status_code=401, detail='Invalid token')

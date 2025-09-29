@@ -1,24 +1,25 @@
-from typing import Optional, Protocol, Tuple
 import re
+from typing import Protocol
 
 
 class Geocoder(Protocol):
-    def parse_latlon(self, val: Optional[str]
-                     ) -> Optional[Tuple[float, float]]: ...
+    def parse_latlon(self, val: str | None) -> tuple[float, float] | None: ...
 
 
 class DefaultGeocoder(Geocoder):
-    def parse_latlon(self, val: Optional[str]) -> Optional[Tuple[float, float]]:
+    def parse_latlon(self, val: str | None) -> tuple[float, float] | None:
         if val is None:
             return None
-        s = val.strip().upper().replace("°", "").replace("'", "").replace(
-            '"', "").replace(",", " ").replace("  ", " ")
         s = (
-            s.replace("С", "N")
-             .replace("Ю", "S")
-             .replace("В", "E")
-             .replace("З", "W")
+            val.strip()
+            .upper()
+            .replace('°', '')
+            .replace("'", '')
+            .replace('"', '')
+            .replace(',', ' ')
+            .replace('  ', ' ')
         )
+        s = s.replace('С', 'N').replace('Ю', 'S').replace('В', 'E').replace('З', 'W')
 
         m_lat = re.search(r'([NS])', s)
         m_lon = re.search(r'([EW])', s)
@@ -26,8 +27,8 @@ class DefaultGeocoder(Geocoder):
             return None
         lat_dir = m_lat.group(1)
         lon_dir = m_lon.group(1)
-        lat_part = s[:m_lat.start()].strip()
-        lon_part = s[m_lat.end():m_lon.start()].strip()
+        lat_part = s[: m_lat.start()].strip()
+        lon_part = s[m_lat.end() : m_lon.start()].strip()
         if not lat_part:
             return None
         if not lon_part:
@@ -43,8 +44,8 @@ class DefaultGeocoder(Geocoder):
             lon_dec = -lon_dec
         return lat_dec, lon_dec
 
-    def _parse_part(self, part: str) -> Optional[float]:
-        part = part.replace(" ", "")
+    def _parse_part(self, part: str) -> float | None:
+        part = part.replace(' ', '')
         m = re.match(r'^(\d+)(\d{2}(?:\.\d+)?)$', part)
         if not m:
             return None

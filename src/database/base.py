@@ -29,7 +29,6 @@ class DatabaseManager:
         )
 
 
-@asynccontextmanager
 async def get_database() -> AsyncGenerator[AsyncSession | Any, None]:
     async with db_manager.async_session() as session:
         async with session.begin():

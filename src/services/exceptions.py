@@ -1,30 +1,28 @@
 class ServiceError(Exception):
-    """Base class for event-related exceptions."""
+    """Base class for service-layer errors."""
+
+    pass
 
 
-class EventNotFoundError(ServiceError):
-    """Raised when the event does not exist."""
+class RegionCreateError(ServiceError):
+    """Raised when a region cannot be created."""
+
+    pass
 
 
-class EventExpiredError(ServiceError):
-    """Raised when the event has already started or passed."""
+class UavFlightCreateError(ServiceError):
+    """Raised when a UAV flight cannot be created."""
+
+    pass
 
 
-class EventCreatorLeaveError(ServiceError):
-    """Raised when the creator attempts to leave their own event."""
+class FileCreateError(ServiceError):
+    """Raised when a file metadata record cannot be created."""
+
+    pass
 
 
-class UserNotParticipantError(ServiceError):
-    """Raised when a non-participant tries to leave the event."""
+class FileDeactivateError(ServiceError):
+    """Raised when existing file metadata records cannot be deactivated."""
 
-
-class UserIsAlreadyParticipantError(ServiceError):
-    """Raised when a user is already participant."""
-
-
-class UserNotFoundError(ServiceError):
-    """Raised when a user not present"""
-
-
-class NotEventCreatorError(ServiceError):
-    """Raised when a non-creator tries to delete the event."""
+    pass
