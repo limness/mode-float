@@ -57,8 +57,6 @@ async def upload_xlsx_file(
             detail=f'File size exceeds maximum allowed size of {MAX_FILE_SIZE // (1024 * 1024)}MB!',
         )
 
-    print('start001')
-
     file_io = io.BytesIO(file_content)
     try:
         workbook = openpyxl.load_workbook(file_io, read_only=True)
@@ -70,7 +68,6 @@ async def upload_xlsx_file(
         )
     finally:
         file_io.seek(0)
-    print('start002')
 
     try:
         file_rec = await create_file_metadata(
@@ -90,7 +87,6 @@ async def upload_xlsx_file(
         )
 
     try:
-        print('start0')
         await process_xlsx_file(
             db_session=db_session,
             file_io=file_io,
@@ -140,19 +136,14 @@ async def process_xlsx_file(
     import logging
     logger = logging.getLogger(__name__)
     try:
-        logger.info('got without')
         with pd.ExcelFile(file_io) as excel_file:
             for sheet_name in excel_file.sheet_names:
-                print('start')
                 loader = ExcelLoader(source=excel_file, sheet_name=sheet_name)
                 mapper = DefaultMapper(DefaultGeocoder())
 
                 df = loader.load()
                 if df.empty:
                     continue
-
-                logger.info('got %s', df.shape)
-                print('got', df.shape)
 
                 for _, row in df.iterrows():
                     parsed: ParsedUavFlight = mapper.map_row(row)
