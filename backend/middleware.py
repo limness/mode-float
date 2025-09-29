@@ -68,6 +68,8 @@ class JWTKeycloakValidator:
             # Create public key from JWK
             public_key = jwt.algorithms.RSAAlgorithm.from_jwk(key_data)
 
+            print(public_key)
+            logger.info('jwt %s', public_key)
             # Validate token
             payload = jwt.decode(
                 token,
