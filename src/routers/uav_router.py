@@ -134,6 +134,7 @@ async def process_xlsx_file(
     file_id: str,
 ) -> None:
     import logging
+
     logger = logging.getLogger(__name__)
     try:
         with pd.ExcelFile(file_io) as excel_file:

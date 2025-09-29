@@ -1,17 +1,17 @@
 import re
+from datetime import datetime
 from math import atan2, cos, radians, sin, sqrt
 from typing import Any, Optional, Protocol
+from zoneinfo import ZoneInfo
 
 import pandas as pd
-from datetime import datetime
-from zoneinfo import ZoneInfo
 
 from src.database.models import UavFlightModel
 
 from .geocoder import Geocoder
 
 
-def ensure_aware(x, tz="Europe/Moscow"):
+def ensure_aware(x, tz='Europe/Moscow'):
     tz = ZoneInfo(tz) if isinstance(tz, str) else tz
     if x is None:
         return None
@@ -59,8 +59,12 @@ class DefaultMapper(Mapper):
         )
 
         dof = self._extract(raw_dep, r'-ADD\s+(\d{6})')
-        dep_time = ensure_aware(self._make_timestamp(dof, self._extract(raw_dep, r'-ATD\s+(\d{4})')))
-        arr_time = ensure_aware(self._make_timestamp(dof, self._extract(raw_arr, r'-ATA\s+(\d{4})')))
+        dep_time = ensure_aware(
+            self._make_timestamp(dof, self._extract(raw_dep, r'-ATD\s+(\d{4})'))
+        )
+        arr_time = ensure_aware(
+            self._make_timestamp(dof, self._extract(raw_arr, r'-ATA\s+(\d{4})'))
+        )
 
         date = None
         if dep_time is not None:
