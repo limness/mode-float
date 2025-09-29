@@ -6,7 +6,7 @@ import { classNames } from '../utils/classNames'
 
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '/api').replace(/\/$/, '')
 const UPLOAD_ENDPOINT =
-  import.meta.env.VITE_UPLOAD_ENDPOINT ?? `${API_BASE_URL}/files/upload`
+  import.meta.env.VITE_UPLOAD_ENDPOINT ?? `${API_BASE_URL}/upload/xlsx`
 
 export function UploadPage() {
   const navigate = useNavigate()

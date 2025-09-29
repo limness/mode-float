@@ -362,3 +362,6 @@ pyrightconfig.json
 frontend/node_modules/
 frontend/dist/
 frontend/.vite/
+
+# macOS artifacts
+.DS_Store
