@@ -57,6 +57,8 @@ class JWTKeycloakValidator:
 
             # Get JWKS keys
             jwks = await self.get_jwks()
+            print(jwks, '//', kid)
+            logger.info('jwt %s /// %s', jwks, kid)
 
             # Find matching key
             key_data = self.get_key_by_kid(jwks, kid)
@@ -68,8 +70,6 @@ class JWTKeycloakValidator:
             # Create public key from JWK
             public_key = jwt.algorithms.RSAAlgorithm.from_jwk(key_data)
 
-            print(public_key)
-            logger.info('jwt %s', public_key)
             # Validate token
             payload = jwt.decode(
                 token,
