@@ -9,7 +9,7 @@ class FileUploadResponseSchema(BaseModel):
     file_size: int
     status: str
     message: str
-    sheet_names: List[str]
+    sheet_names: list[str] | None
 
 
 class FileInfoSchema(BaseModel):
@@ -19,7 +19,7 @@ class FileInfoSchema(BaseModel):
     content_type: str | None
     user_id: str
     description: str | None
-    sheet_names: List[str]
+    sheet_names: list[str] | None
     preview_rows: int
     preview_columns: int
     status: str
@@ -30,7 +30,7 @@ class FileInfoSchema(BaseModel):
 class FileDataSchema(BaseModel):
     file_id: str
     sheet_name: str
-    columns: List[str]
+    columns: list[str] | None
     data: List[Dict[str, Any]]
     total_rows: int
     current_page: int

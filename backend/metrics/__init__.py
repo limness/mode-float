@@ -1,4 +1,8 @@
-from backend.metrics.enums import EventCreationMetricNameEnum, EventMetricNameEnum, RegMetricNameEnum
+from backend.metrics.enums import (
+    EventCreationMetricNameEnum,
+    EventMetricNameEnum,
+    RegMetricNameEnum,
+)
 from backend.metrics.event_metric import event_creation_metric, event_metric
 from backend.metrics.registration_metric import reg_metric, start_metric
 

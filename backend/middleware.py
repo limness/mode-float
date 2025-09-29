@@ -1,6 +1,6 @@
 import logging
 from functools import lru_cache
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 
 import httpx
 import jwt
@@ -115,7 +115,7 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
     payload = await validator.validate_token(token)
 
     # Extract user information
-    user_info = {
+    return {
         'uid': payload.get('sub'),
         'username': payload.get('preferred_username'),
         'email': payload.get('email'),
@@ -129,8 +129,6 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
         'exp': payload.get('exp'),
         'iat': payload.get('iat'),
     }
-
-    return {'user': user_info}
 
 
 async def get_optional_user(request: Request) -> Optional[Dict]:
@@ -160,7 +158,7 @@ async def get_optional_user(request: Request) -> Optional[Dict]:
         return None
 
 
-def require_roles(required_roles: List[str]):
+def require_roles(required_roles: list[str] | None):
     def role_checker(current_user: Dict = Depends(get_current_user)) -> Dict:
         user_roles = current_user['user']['roles'] + current_user['user']['client_roles']
 
@@ -174,7 +172,7 @@ def require_roles(required_roles: List[str]):
     return role_checker
 
 
-def require_groups(required_groups: List[str]):
+def require_groups(required_groups: list[str] | None):
     def group_checker(current_user: Dict = Depends(get_current_user)) -> Dict:
         user_groups = current_user['user']['groups']
 
@@ -189,7 +187,7 @@ def require_groups(required_groups: List[str]):
 
 
 class JWTMiddleware(BaseHTTPMiddleware):
-    def __init__(self, app, exclude_paths: List[str] = None):
+    def __init__(self, app, exclude_paths: list[str] | None = None):
         super().__init__(app)
         self.exclude_paths = exclude_paths or ['/docs', '/openapi.json', '/health']
 
