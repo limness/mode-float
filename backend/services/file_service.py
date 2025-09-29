@@ -63,7 +63,7 @@ async def create_file_metadata(
     file_size: int,
     status: str,
     message: str,
-    sheet_names: list[str],
+    sheet_names: list[str] | None,
     is_active: bool = True,
     deactivate_previous: bool = True,
     deactivate_filters: dict[str, Any] | None = None,

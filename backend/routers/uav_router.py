@@ -22,7 +22,11 @@ from backend.services.exceptions import (
     ServiceError,
     UavFlightCreateError,
 )
-from backend.services.file_service import create_file_metadata, deactivate_old_files, update_file_status
+from backend.services.file_service import (
+    create_file_metadata,
+    deactivate_old_files,
+    update_file_status,
+)
 from backend.services.parse_service.geocoder import DefaultGeocoder
 from backend.services.parse_service.loader import ExcelLoader
 from backend.services.parse_service.mapper import DefaultMapper

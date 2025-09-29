@@ -1,11 +1,12 @@
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
-import os
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import JSONResponse, FileResponse
 
 from backend.core.settings import application_settings
+from backend.middleware import JWTMiddleware
 from backend.routers.uav_router import router as uav_router
 
 
@@ -24,9 +25,9 @@ def _mount(app: FastAPI):
             return FileResponse(index_file)
 
     app.mount(
-        "/",
-        SPAStaticFiles(directory=os.path.join(os.path.dirname(__file__), "./static"), html=True),
-        name="static",
+        '/',
+        SPAStaticFiles(directory=os.path.join(os.path.dirname(__file__), './static'), html=True),
+        name='static',
     )
 
 
@@ -34,7 +35,7 @@ def _configure_middlewares(app: FastAPI):
     app.add_middleware(
         CORSMiddleware,
         allow_origins=application_settings.APP_ALLOWED_ORIGINS,
-        allow_credentials=True,
+        allow_credentials=False,
         allow_methods=['DELETE', 'GET', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT'],
         allow_headers=[
             'Content-Type',
@@ -45,10 +46,7 @@ def _configure_middlewares(app: FastAPI):
             'Authorization',
         ],
     )
-    # app.add_middleware(
-    #     JWTMiddleware,
-    #     exclude_paths=['/docs', '/openapi.json', '/health']
-    # )
+    app.add_middleware(JWTMiddleware, exclude_paths=['/docs', '/openapi.json', '/health'])
 
 
 def create_app() -> FastAPI:

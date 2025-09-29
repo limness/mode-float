@@ -76,13 +76,9 @@ class UavFlightModel(Base):
     date: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True, index=True)
     duration_minutes: Mapped[int] = mapped_column(Integer, nullable=True)
     city: Mapped[str | None] = mapped_column(String(128), nullable=True)
-    major_region_id: Mapped[Optional[int]] = mapped_column(ForeignKey('regions.id'), nullable=True)
-    takeoff_region_id: Mapped[Optional[int]] = mapped_column(
-        ForeignKey('regions.id'), nullable=True
-    )
-    landing_region_id: Mapped[Optional[int]] = mapped_column(
-        ForeignKey('regions.id'), nullable=True
-    )
+    major_region_id: Mapped[int] = mapped_column(ForeignKey('regions.id'), nullable=True)
+    takeoff_region_id: Mapped[int] = mapped_column(ForeignKey('regions.id'), nullable=True)
+    landing_region_id: Mapped[int] = mapped_column(ForeignKey('regions.id'), nullable=True)
     distance_km: Mapped[float | None] = mapped_column(Float, nullable=True)
     average_speed_kmh: Mapped[float | None] = mapped_column(Float, nullable=True)
 
