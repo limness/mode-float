@@ -25,7 +25,7 @@ class ApplicationSettings(BaseConfigSettings):
     APP_DEFAULT_USER_ID: int = 0
     APP_PROMETHEUS_HOST: str = '0.0.0.0'
     APP_PROMETHEUS_PORT: int = 8000
-    APP_ALLOWED_ORIGINS: list[str] | None = ['*']
+    APP_ALLOWED_ORIGINS: list[str] = []
     APP_TIMEZONE: ZoneInfo = ZoneInfo('Europe/Moscow')
 
 

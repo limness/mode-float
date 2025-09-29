@@ -158,7 +158,7 @@ async def get_optional_user(request: Request) -> Optional[Dict]:
         return None
 
 
-def require_roles(required_roles: list[str] | None):
+def require_roles(required_roles: list[str]):
     def role_checker(current_user: Dict = Depends(get_current_user)) -> Dict:
         user_roles = current_user['user']['roles'] + current_user['user']['client_roles']
 
@@ -172,7 +172,7 @@ def require_roles(required_roles: list[str] | None):
     return role_checker
 
 
-def require_groups(required_groups: list[str] | None):
+def require_groups(required_groups: list[str]):
     def group_checker(current_user: Dict = Depends(get_current_user)) -> Dict:
         user_groups = current_user['user']['groups']
 
