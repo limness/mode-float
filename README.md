@@ -26,7 +26,7 @@ cd mode-float
 cp .env.example .env.prod
 ```
 
-> [!INFO]
+> [!NOTE]
 > Makefile ищет файл `.env.<ENV>` через переменную `ENV_FILE ?= .env.$(ENV)`.
 
 ### Переменные окружения
