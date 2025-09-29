@@ -4,7 +4,7 @@ import { PiDownloadSimpleBold, PiFileArrowUpBold } from 'react-icons/pi'
 import { Button } from '../components/common/Button'
 import { classNames } from '../utils/classNames'
 
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '/api').replace(/\/$/, '')
+const API_BASE_URL = 'localhost:8073/api/v1/uav'
 const UPLOAD_ENDPOINT =
   import.meta.env.VITE_UPLOAD_ENDPOINT ?? `${API_BASE_URL}/upload/xlsx`
 
