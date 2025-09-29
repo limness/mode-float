@@ -8,10 +8,12 @@ from fastapi.staticfiles import StaticFiles
 from backend.core.settings import application_settings
 from backend.middleware import JWTMiddleware
 from backend.routers.uav_router import router as uav_router
+from backend.routers.user_router import router as user_router
 
 
 def _include_routers(app: FastAPI):
     app.include_router(uav_router, prefix='/api/v1/uav')
+    app.include_router(user_router, prefix='/api/v1/users')
 
 
 def _mount(app: FastAPI):
