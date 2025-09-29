@@ -64,7 +64,7 @@ class JWTKeycloakValidator:
             key_data = self.get_key_by_kid(jwks, kid)
             if not key_data:
                 raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED, detail='Unable to find matching key'
+                    status_code=status.HTTP_401_UNAUTHORIZED, detail=f'Unable to find matching key {kid} for {jwks}'
                 )
 
             # Create public key from JWK
