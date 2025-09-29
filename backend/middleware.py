@@ -21,7 +21,7 @@ class JWTKeycloakValidator:
         self.realm = realm
         self.jwks_url = f'{keycloak_url}/realms/{realm}/protocol/openid_connect/certs'
 
-    @lru_cache(maxsize=1)
+    # @lru_cache(maxsize=1)
     async def get_jwks(self) -> Dict:
         try:
             async with httpx.AsyncClient() as client:
