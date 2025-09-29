@@ -60,6 +60,6 @@ def create_app() -> FastAPI:
         swagger_ui_parameters={'displayRequestDuration': True},
     )
     _configure_middlewares(app)
-    _mount(app)
     _include_routers(app)
+    _mount(app)
     return app
