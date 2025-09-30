@@ -190,7 +190,7 @@ async def process_xlsx_file(
 
 @router.get(
     '/date-bounds',
-    status_code=status.HTTP_202_OK
+    status_code=status.HTTP_200_OK
 )
 async def get_date_bounds(db_session: AsyncSession = Depends(get_database)) -> DateBoundsResponse:
     min_date, max_date = await get_uav_date_bounds(db_session)
@@ -202,12 +202,12 @@ async def get_date_bounds(db_session: AsyncSession = Depends(get_database)) -> D
 
 @router.post(
     '/date-bounds/query',
-    response_model=list[dict]
+    status_code=status.HTTP_200_OK
 )
 async def get_flights_between_dates(
     bounds: DateBoundsResponse,
     db_session: AsyncSession = Depends(get_database),
-):
+) -> list[dict]:
     flights = await get_uav_flights_between_dates(db_session, bounds=bounds)
     return flights
 
