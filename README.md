@@ -69,11 +69,15 @@ cp .env.example .env.prod
 
 > [!IMPORTANT]
 > Замените значения в конфиге:
-> `server_name` → на ваш домен (например, d1ffic00lt.com www.d1ffic00l.com)
-> `ssl_certificate` и `ssl_certificate_key` → на реальные пути к вашим сертификатам
-(например, для Let’s Encrypt:
+
+* `server_name` → на ваш домен (например, d1ffic00lt.com www.d1ffic00l.com)
+
+* `ssl_certificate` и `ssl_certificate_key` → на реальные пути к вашим сертификатам
+
+> [!NOTE]
+> например, для Let’s Encrypt:
 `/etc/letsencrypt/live/<ВАШ_ДОМЕН>/fullchain.pem` и
-`/etc/letsencrypt/live/<ВАШ_ДОМЕН>/privkey.pem`)
+`/etc/letsencrypt/live/<ВАШ_ДОМЕН>/privkey.pem`
 
 ## 5. Настройка KeyCloak
 
@@ -123,4 +127,39 @@ make all-prod
 
 ## 5. Настройка дашборда
 
+> [!IMPORTANT]
+> Для корректной работы Дашборда вам требуется учетная запись [yandex.cloud](https://yandex.cloud) (в том числе и
+ [datalens.ru](https://datalens.ru))   
+
+
+### 0. Создание Каталога 
+
+Перед начало работы вы должны дождаться создания Облака на [yandex.cloud](https://yandex.cloud). Это может занять 
+некоторое время. Проверить статус 
+создания каталога Вы можете посмотреть на [этой](https://console.yandex.cloud/cloud) странице. 
+
+### 1. Создание Воркбука
+* Скачайте [файл](https://github.com/limness/flight-potato-dashboard.json) дашборда
+* Зайдите на [страницу](https://datalens.ru/collections) с Воркбуками
+* В правом верхнем углу нажмите кнопку `Создать`
+* Импортируйте ранее скаченный файл
+* Заполните полня названия и описания
+
+### 2. Настройка подключения к базе данных
+* Зайдите в ранее созданный Воркбук
+* Перейдите во вкладку `Подключения`
+* Нажмите на подключение `flight-database-connection`
+* Заполните данные 
+  * Выберите Ваш текущий каталог (если каталог отсутствует – создайте его)
+  * Укажите `Хост` (ip вашего сервера)
+  * Укажите `Порт` базы данных
+  * Укажите имя пользователя для доступа к базе данных
+  * Укажите пароль для дуступа к базе данных
+
+### 3. Настройка интеграции на сайт
+
+> [!WARNING]
+> Для интеграции дашбордов DataLens в работу сайта требуется подписка DataLens for business 
+
+TODO: инфа про rsa jwt и id
 ![https://s11.pikabu.ru/images/big_size_comm/2020-06_4/1592486654118117958.jpg](https://s11.pikabu.ru/images/big_size_comm/2020-06_4/1592486654118117958.jpg)
