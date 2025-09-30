@@ -5,7 +5,7 @@ interface UseDatalensEmbedOptions {
   params?: Record<string, string | string[]>
 }
 
-const API_DASHBOARD_BASE = (import.meta.env.VITE_API_DASHBOARD_URL ?? '/api/v1/dashboard').replace(/\/$/, '')
+const API_DASHBOARD_BASE = ('/api/v1/dashboard').replace(/\/$/, '')
 const EMBED_ENDPOINT = `${API_DASHBOARD_BASE}/embed/datalens`
 
 interface EmbedState {
