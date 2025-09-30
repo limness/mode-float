@@ -540,3 +540,33 @@
   color: var(--color-accent);
 }
 
+.upload-progress {
+  margin-top: 20px;
+  width: 100%;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+  position: relative;
+  height: 12px;
+}
+
+.upload-progress__bar {
+  height: 100%;
+  background: linear-gradient(120deg, rgba(81, 97, 255, 0.9), rgba(101, 115, 255, 0.9));
+  width: 0;
+  transition: width 0.2s ease;
+}
+
+.upload-progress__label {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+  text-align: right;
+}
+
+.upload-zone__loading {
+  margin-top: 16px;
+  font-size: 14px;
+  color: var(--color-text-muted);
+}

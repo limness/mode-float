@@ -15,6 +15,7 @@ export function UploadPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isUploading, setIsUploading] = useState(false)
+  const [progress, setProgress] = useState(0)
 
   const handleFiles = (fileList: FileList | null) => {
     if (!fileList?.length) {
@@ -45,6 +46,7 @@ export function UploadPage() {
 
     setIsUploading(true)
     setError(null)
+    setProgress(0)
 
     try {
       const response = await fetch(UPLOAD_ENDPOINT, {
@@ -57,18 +59,23 @@ export function UploadPage() {
         throw new Error(message || 'Ошибка загрузки файла')
       }
 
+      setProgress(100)
       navigate('/')
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Не удалось загрузить файл'
       setError(message)
     } finally {
-      setIsUploading(false)
+      setTimeout(() => {
+        setIsUploading(false)
+        setProgress(0)
+      }, 400)
     }
   }
 
   const resetSelection = () => {
     setSelectedFile(null)
     setError(null)
+    setProgress(0)
     if (inputRef.current) {
       inputRef.current.value = ''
     }
@@ -123,6 +130,19 @@ export function UploadPage() {
             {selectedFile ? selectedFile.name : 'Загрузите отчёт в формате exel'}
           </div>
           <div className="upload-zone__hint">Нажмите, чтобы выбрать файл на компьютере</div>
+
+          {isUploading && (
+            <div className="upload-zone__loading">Отправляем файл…</div>
+          )}
+
+          {isUploading && (
+            <div className="upload-progress">
+              <div className="upload-progress__bar" style={{ width: `${progress}%` }} />
+            </div>
+          )}
+          {isUploading && (
+            <div className="upload-progress__label">{progress}%</div>
+          )}
         </div>
 
         {error && (
