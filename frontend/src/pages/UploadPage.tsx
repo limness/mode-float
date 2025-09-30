@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { PiDownloadSimpleBold, PiFileArrowUpBold } from 'react-icons/pi'
 import { Button } from '../components/common/Button'
@@ -16,6 +16,15 @@ export function UploadPage() {
   const [error, setError] = useState<string | null>(null)
   const [isUploading, setIsUploading] = useState(false)
   const [progress, setProgress] = useState(0)
+  const progressTimer = useRef<number | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (progressTimer.current) {
+        window.clearInterval(progressTimer.current)
+      }
+    }
+  }, [])
 
   const handleFiles = (fileList: FileList | null) => {
     if (!fileList?.length) {
@@ -48,6 +57,11 @@ export function UploadPage() {
     setError(null)
     setProgress(0)
 
+    // pseudo-progress while awaiting response
+    progressTimer.current = window.setInterval(() => {
+      setProgress((prev) => (prev < 80 ? prev + 5 : prev))
+    }, 200)
+
     try {
       const response = await fetch(UPLOAD_ENDPOINT, {
         method: 'POST',
@@ -59,16 +73,24 @@ export function UploadPage() {
         throw new Error(message || 'Ошибка загрузки файла')
       }
 
+      if (progressTimer.current) {
+        window.clearInterval(progressTimer.current)
+      }
       setProgress(100)
-      navigate('/')
+      setTimeout(() => {
+        navigate('/')
+      }, 300)
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Не удалось загрузить файл'
       setError(message)
     } finally {
+      if (progressTimer.current) {
+        window.clearInterval(progressTimer.current)
+      }
       setTimeout(() => {
         setIsUploading(false)
         setProgress(0)
-      }, 400)
+      }, 600)
     }
   }
 
@@ -127,7 +149,7 @@ export function UploadPage() {
             {selectedFile ? 'Файл готов к загрузке' : 'Перетащите файлы для загрузки'}
           </div>
           <div className="upload-zone__subtitle">
-            {selectedFile ? selectedFile.name : 'Загрузите отчёт в формате exel'}
+            {selectedFile ? selectedFile.name : 'Загрузите отчёт в формате xlsx'}
           </div>
           <div className="upload-zone__hint">Нажмите, чтобы выбрать файл на компьютере</div>
 
