@@ -8,6 +8,8 @@ from backend.database.models import RegionModel, UavFlightModel
 from backend.repositories.uav_repository import region_repo, uav_flight_repo
 from backend.schemas.uav_schema import DateBoundsResponse
 from backend.services.exceptions import RegionCreateError, UavFlightCreateError
+from backend.schemas.uav_schema import DateBoundsResponse
+from dateutil.parser import isoparse
 
 
 async def create_region(
@@ -149,6 +151,15 @@ async def get_uav_date_bounds(db_session: AsyncSession):
 
 async def get_uav_flights_between_dates(db_session: AsyncSession, *, bounds: DateBoundsResponse):
     try:
+        if bounds.min_date is None or bounds.max_date is None:
+            raise ValueError('Date bounds for search are not set')
+        min_db, max_db = await uav_flight_repo.get_date_bounds(db_session)
+        if min_db is None or max_db is None:
+            raise ValueError('Date bounds for search are not set')
+        min_user = isoparse(bounds.min_date)
+        max_user = isoparse(bounds.max_date)
+        if min_user < min_db or max_user > max_db:
+            raise ValueError(f'Search bounds ({bounds.min_date} - {bounds.max_date}) are outside the allowed range ({min_db} - {max_db})')
         flights = await uav_flight_repo.get_flights_between_dates(db_session, bounds)
         return [flight.__dict__ for flight in flights]
     except SQLAlchemyError as exc:

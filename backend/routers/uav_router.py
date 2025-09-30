@@ -194,11 +194,17 @@ async def process_xlsx_file(
 
 @router.get('/date-bounds', status_code=status.HTTP_200_OK)
 async def get_date_bounds(db_session: AsyncSession = Depends(get_database)) -> DateBoundsResponse:
-    min_date, max_date = await get_uav_date_bounds(db_session)
-    return DateBoundsResponse(
-        min_date=min_date.isoformat() if min_date else None,
-        max_date=max_date.isoformat() if max_date else None,
-    )
+    try:
+        min_date, max_date = await get_uav_date_bounds(db_session)
+        return DateBoundsResponse(
+            min_date=min_date.isoformat() if min_date else None,
+            max_date=max_date.isoformat() if max_date else None,
+        )
+    except Exception as exc:
+        raise IDException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(exc),
+        )
 
 
 @router.post('/date-bounds/query', status_code=status.HTTP_200_OK)
@@ -206,5 +212,12 @@ async def get_flights_between_dates(
     bounds: DateBoundsResponse,
     db_session: AsyncSession = Depends(get_database),
 ) -> list[dict]:
-    flights = await get_uav_flights_between_dates(db_session, bounds=bounds)
-    return flights
+    try:
+        flights = await get_uav_flights_between_dates(db_session, bounds=bounds)
+        return flights
+    except Exception as exc:
+        raise IDException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(exc),
+        )
+

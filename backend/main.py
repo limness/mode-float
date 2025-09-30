@@ -9,10 +9,12 @@ from backend.core.settings import application_settings
 from backend.routers.dashboard_router import router as dashboard_router
 from backend.routers.uav_router import router as uav_router
 from backend.routers.user_router import router as user_router
+from backend.routers.region_router import router as region_router
 
 
 def _include_routers(app: FastAPI):
     app.include_router(user_router, prefix='/api/v1/users')
+    app.include_router(region_router, prefix='/api/v1/regions')
     app.include_router(uav_router, prefix='/api/v1/uav')
     app.include_router(dashboard_router, prefix='/api/v1/dashboards')
 
