@@ -13,16 +13,43 @@ const DATALENS_IDS: Record<string, string | undefined> = {
   time: import.meta.env.VITE_DATALENS_TIME_ID,
 }
 
-const dashboardPages = [
+const DEFAULT_EMBED_TTL = 600
+const DEFAULT_EMBED_PARAMS: Record<string, string | string[]> | undefined = undefined
+
+const dashboardPages: Array<{
+  path: string
+  title: string
+  embedId?: string
+  embedUrl?: string
+  embedTtlSeconds?: number
+  embedParams?: Record<string, string | string[]>
+  groups: string[]
+}> = [
   {
     path: '/',
     title: 'Обзор',
     embedId: DATALENS_IDS.overview,
     embedUrl: DATALENS_IDS.overview ? undefined : 'https://ru.wikipedia.org/wiki/Dashboard',
+    embedTtlSeconds: DEFAULT_EMBED_TTL,
+    embedParams: DEFAULT_EMBED_PARAMS,
     groups: ['operator', 'admin'],
   },
-  { path: '/dashboard-2', title: 'Регионы', embedId: DATALENS_IDS.regions, groups: ['operator', 'admin'] },
-  { path: '/dashboard-3', title: 'Время', embedId: DATALENS_IDS.time, groups: ['operator', 'admin'] },
+  {
+    path: '/dashboard-2',
+    title: 'Регионы',
+    embedId: DATALENS_IDS.regions,
+    embedTtlSeconds: DEFAULT_EMBED_TTL,
+    embedParams: DEFAULT_EMBED_PARAMS,
+    groups: ['operator', 'admin'],
+  },
+  {
+    path: '/dashboard-3',
+    title: 'Время',
+    embedId: DATALENS_IDS.time,
+    embedTtlSeconds: DEFAULT_EMBED_TTL,
+    embedParams: DEFAULT_EMBED_PARAMS,
+    groups: ['operator', 'admin'],
+  },
 ]
 
 function App() {
