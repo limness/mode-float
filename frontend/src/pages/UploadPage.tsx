@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { createProgressPattern } from '../utils/progress'
 import { useNavigate } from 'react-router-dom'
 import { PiDownloadSimpleBold, PiFileArrowUpBold } from 'react-icons/pi'
 import { Button } from '../components/common/Button'
@@ -58,9 +59,10 @@ export function UploadPage() {
     setProgress(0)
 
     // pseudo-progress while awaiting response
+    const pattern = createProgressPattern(90)
     progressTimer.current = window.setInterval(() => {
-      setProgress((prev) => (prev < 80 ? prev + 5 : prev))
-    }, 200)
+      setProgress((prev) => pattern(prev))
+    }, 250)
 
     try {
       const response = await fetch(UPLOAD_ENDPOINT, {
