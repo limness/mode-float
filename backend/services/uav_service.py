@@ -9,7 +9,6 @@ from backend.database.models import RegionModel, UavFlightModel
 from backend.repositories.uav_repository import region_repo, uav_flight_repo
 from backend.schemas.uav_schema import DateBoundsResponse
 from backend.services.exceptions import RegionCreateError, UavFlightCreateError
-from backend.schemas.uav_schema import DateBoundsResponse
 
 
 async def create_region(
