@@ -1,38 +1,20 @@
-import type { FormEvent } from 'react'
-import { Link } from 'react-router-dom'
-import { Button } from '../components/common/Button'
+import { redirectToKeycloakLogin } from '../config/auth'
 
 export function LoginPage() {
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-  }
-
   return (
     <div className="auth-page">
       <div className="auth-card">
         <h1 className="auth-title">
-          Вход в систему <span className="auth-title__accent">FlyEye</span>
+          Войти в <span className="auth-title__accent">Fly Potato</span>
         </h1>
-        <form className="auth-form" onSubmit={handleSubmit}>
-          <div className="form-field">
-            <label htmlFor="login">
-              Логин<span className="required">*</span>
-            </label>
-            <input id="login" name="login" type="text" placeholder="Введите логин" required />
-          </div>
-          <div className="form-field">
-            <label htmlFor="password">
-              Пароль<span className="required">*</span>
-            </label>
-            <input id="password" name="password" type="password" placeholder="Введите пароль" required />
-          </div>
-          <div className="auth-actions">
-            <Button type="submit">Войти</Button>
-          </div>
-        </form>
-        <div className="auth-extra">
-          Нет аккаунта? <Link to="/auth/register">Зарегистрироваться</Link>
+        <p className="auth-card__subtitle">Авторизация проходит через корпоративный Keycloak.</p>
+
+        <div className="auth-form auth-form--actions">
+          <button className="auth-submit" type="button" onClick={redirectToKeycloakLogin}>
+            Продолжить
+          </button>
         </div>
+        <p className="auth-card__footer">Используйте корпоративный аккаунт или провайдеры, подключённые в Keycloak (например, Google).</p>
       </div>
     </div>
   )

@@ -482,6 +482,24 @@
   color: var(--color-accent);
 }
 
+.auth-card__subtitle {
+  margin: 0;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+.auth-form--actions {
+  align-items: stretch;
+}
+
+.auth-card__footer {
+  margin: 0;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
 .auth-form {
   display: flex;
   flex-direction: column;
