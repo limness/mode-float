@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from backend.database.models import RegionModel, UavFlightModel
 from backend.repositories.uav_repository import region_repo, uav_flight_repo
 from backend.services.exceptions import RegionCreateError, UavFlightCreateError
+from backend.schemas.uav_schema import DateBoundsResponse
 
 
 async def create_region(
@@ -144,3 +145,10 @@ async def get_uav_date_bounds(db_session: AsyncSession):
         return min_date, max_date
     except SQLAlchemyError as exc:
         raise UavFlightCreateError(f'Failed to get date bounds: {exc}') from exc
+
+async def get_uav_flights_between_dates(db_session: AsyncSession, *, bounds: DateBoundsResponse):
+    try:
+        flights = await uav_flight_repo.get_flights_between_dates(db_session, bounds)
+        return [flight.__dict__ for flight in flights]
+    except SQLAlchemyError as exc:
+        raise UavFlightCreateError(f'Failed to get flights between dates: {exc}') from exc

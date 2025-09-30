@@ -1,4 +1,5 @@
 from backend.database.models import RegionModel, UavFlightModel
+from backend.schemas.uav_schema import DateBoundsResponse
 
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -15,6 +16,15 @@ class UavFlightRepository(BaseRepository[UavFlightModel]):
         )
         min_date, max_date = result.first()
         return min_date, max_date
+
+    async def get_flights_between_dates(self, db_session: AsyncSession, bounds: DateBoundsResponse):
+        query = select(UavFlightModel).where(
+            UavFlightModel.date >= bounds.min_date,
+            UavFlightModel.date <= bounds.max_date,
+        )
+        result = await db_session.execute(query)
+        flights = result.scalars().all()
+        return flights
 
 
 class RegionRepository(BaseRepository[RegionModel]):

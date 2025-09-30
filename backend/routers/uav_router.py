@@ -32,7 +32,7 @@ from backend.services.parse_service.geocoder import DefaultGeocoder
 from backend.services.parse_service.loader import ExcelLoader
 from backend.services.parse_service.mapper import DefaultMapper
 from backend.services.parse_service.mapper import UavFlightModel as ParsedUavFlight
-from backend.services.uav_service import create_uav_flight, get_uav_date_bounds
+from backend.services.uav_service import create_uav_flight, get_uav_date_bounds, get_uav_flights_between_dates
 
 router = APIRouter(tags=['Files'])
 
@@ -198,4 +198,16 @@ async def get_date_bounds(db_session: AsyncSession = Depends(get_database)) -> D
         min_date=min_date.isoformat() if min_date else None,
         max_date=max_date.isoformat() if max_date else None,
     )
+
+
+@router.post(
+    '/date-bounds/query',
+    response_model=list[dict]
+)
+async def get_flights_between_dates(
+    bounds: DateBoundsResponse,
+    db_session: AsyncSession = Depends(get_database),
+):
+    flights = await get_uav_flights_between_dates(db_session, bounds=bounds)
+    return flights
 
