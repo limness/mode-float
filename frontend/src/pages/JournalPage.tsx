@@ -98,8 +98,10 @@ export function JournalPage() {
             />
           </label>
         </div>
-        {(exportError || rowsError) && <p className="export-error">{exportError ?? rowsError}</p>
-        {rowsNotice && <p className="export-hint">{rowsNotice}</p>}}
+        {(exportError || rowsError) && (
+          <p className="export-error">{exportError ?? rowsError}</p>
+        )}
+        {rowsNotice && <p className="export-hint">{rowsNotice}</p>}
 
         <div className="table-card">
           {isLoadingRows ? (
