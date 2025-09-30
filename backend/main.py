@@ -51,7 +51,7 @@ def _configure_middlewares(app: FastAPI):
             'Authorization',
         ],
     )
-    # app.add_middleware(JWTMiddleware, exclude_paths=['/docs', '/openapi.json', '/health'])
+    app.add_middleware(JWTMiddleware, exclude_paths=['/docs', '/openapi.json', '/health'])
 
 
 def create_app() -> FastAPI:

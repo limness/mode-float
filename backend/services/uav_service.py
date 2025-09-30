@@ -1,4 +1,5 @@
 from datetime import datetime
+from dateutil.parser import isoparse
 from typing import Any
 
 from sqlalchemy.exc import SQLAlchemyError
@@ -9,7 +10,6 @@ from backend.repositories.uav_repository import region_repo, uav_flight_repo
 from backend.schemas.uav_schema import DateBoundsResponse
 from backend.services.exceptions import RegionCreateError, UavFlightCreateError
 from backend.schemas.uav_schema import DateBoundsResponse
-from dateutil.parser import isoparse
 
 
 async def create_region(
