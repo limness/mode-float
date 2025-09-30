@@ -8,7 +8,7 @@ const PROFILE_ENDPOINT =
 
 interface ProfileState {
   fullName: string
-  role: string
+  group: string
   initials: string
 }
 
@@ -18,14 +18,12 @@ interface ProfileResponse {
   email?: string | null
   first_name?: string | null
   last_name?: string | null
-  roles?: string[] | null
-  client_roles?: string[] | null
   groups?: string[] | null
 }
 
 const FALLBACK_PROFILE: ProfileState = {
-  fullName: 'Плойкин Е.В.',
-  role: 'Администратор',
+  fullName: 'Пользователь',
+  group: '—',
   initials: 'П',
 }
 
@@ -50,9 +48,9 @@ export function TopBar() {
         const payload: ProfileResponse = await response.json()
         setProfile((prev) => {
           const fullName = deriveFullName(payload) ?? prev.fullName
-          const role = deriveRole(payload) ?? prev.role
+          const group = deriveGroup(payload) ?? prev.group
           const initials = deriveInitials(fullName)
-          return { fullName, role, initials }
+          return { fullName, group, initials }
         })
       } catch (error) {
         if (error instanceof DOMException && error.name === 'AbortError') {
@@ -78,7 +76,7 @@ export function TopBar() {
           <div className="user-chip__avatar">{profile.initials}</div>
           <div>
             <div className="user-chip__name">{profile.fullName}</div>
-            <div className="user-chip__meta">{profile.role}</div>
+            <div className="user-chip__meta">{profile.group}</div>
           </div>
         </div>
       </div>
@@ -96,29 +94,25 @@ function deriveFullName(payload: ProfileResponse): string | undefined {
   return payload.username ?? payload.email ?? undefined
 }
 
-function deriveRole(payload: ProfileResponse): string | undefined {
-  const primaryRole = payload.roles?.[0]
-  if (primaryRole) {
-    return translateRole(primaryRole)
+function deriveGroup(payload: ProfileResponse): string | undefined {
+  const groups = payload.groups?.filter(Boolean)
+  if (!groups || groups.length === 0) {
+    return undefined
   }
 
-  const clientRole = payload.client_roles?.[0]
-  if (clientRole) {
-    return translateRole(clientRole)
+  const raw = groups[0] ?? ''
+  const normalized = raw
+    .split('/')
+    .filter(Boolean)
+    .pop() ?? raw
+
+  if (!normalized) {
+    return undefined
   }
 
-  return undefined
-}
-
-function translateRole(role: string): string {
-  switch (role) {
-    case 'administrators':
-      return 'Администратор'
-    case 'operators':
-      return 'Оператор'
-    default:
-      return role
-  }
+  return normalized
+    .replace(/[-_]+/g, ' ')
+    .replace(/\b\w/g, (letter) => letter.toUpperCase())
 }
 
 function deriveInitials(fullName: string): string {
