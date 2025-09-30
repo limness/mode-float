@@ -32,7 +32,11 @@ from backend.services.parse_service.geocoder import DefaultGeocoder
 from backend.services.parse_service.loader import ExcelLoader
 from backend.services.parse_service.mapper import DefaultMapper
 from backend.services.parse_service.mapper import UavFlightModel as ParsedUavFlight
-from backend.services.uav_service import create_uav_flight, get_uav_date_bounds, get_uav_flights_between_dates
+from backend.services.uav_service import (
+    create_uav_flight,
+    get_uav_date_bounds,
+    get_uav_flights_between_dates,
+)
 
 router = APIRouter(tags=['Files'])
 
@@ -188,10 +192,7 @@ async def process_xlsx_file(
         )
 
 
-@router.get(
-    '/date-bounds',
-    status_code=status.HTTP_200_OK
-)
+@router.get('/date-bounds', status_code=status.HTTP_200_OK)
 async def get_date_bounds(db_session: AsyncSession = Depends(get_database)) -> DateBoundsResponse:
     min_date, max_date = await get_uav_date_bounds(db_session)
     return DateBoundsResponse(
@@ -200,14 +201,10 @@ async def get_date_bounds(db_session: AsyncSession = Depends(get_database)) -> D
     )
 
 
-@router.post(
-    '/date-bounds/query',
-    status_code=status.HTTP_200_OK
-)
+@router.post('/date-bounds/query', status_code=status.HTTP_200_OK)
 async def get_flights_between_dates(
     bounds: DateBoundsResponse,
     db_session: AsyncSession = Depends(get_database),
 ) -> list[dict]:
     flights = await get_uav_flights_between_dates(db_session, bounds=bounds)
     return flights
-

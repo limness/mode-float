@@ -1,3 +1,4 @@
+import pathlib
 from zoneinfo import ZoneInfo
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -31,6 +32,17 @@ class ApplicationSettings(BaseConfigSettings):
 
 class PostgresDBSettings(BaseConfigSettings):
     POSTGRES_URI: str = 'None'
+
+
+class DatalensSettings(BaseConfigSettings):
+    DATALENS_BASE_URL: str = 'https://datalens.yandex.cloud'
+    DATALENS_PRIVATE_KEY_PATH: str
+    DEFAULT_TTL_SECONDS: int = 300
+    MIN_TTL_SECONDS: int = 60
+    MAX_TTL_SECONDS: int = 36000
+
+    def get_datalens_private_key(self) -> str:
+        return pathlib.Path(self.DATALENS_PRIVATE_KEY_PATH).read_text(encoding='utf-8')
 
 
 class KeycloakSettings(BaseConfigSettings):
@@ -95,3 +107,5 @@ application_settings = ApplicationSettings()
 postgres_settings = PostgresDBSettings()
 
 keycloak_settings = KeycloakSettings()
+
+datalens_settings = DatalensSettings()

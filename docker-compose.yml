@@ -58,6 +58,7 @@ services:
       - float-net
     volumes:
       - './alembic/versions:/float-mode/alembic/versions'
+      - './certs:/float-mode/certs'
       - './logs:/float-mode/logs'
     depends_on:
       postgres:

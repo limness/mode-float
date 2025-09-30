@@ -6,14 +6,15 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from backend.core.settings import application_settings
-from backend.middleware import JWTMiddleware
+from backend.routers.dashboard_router import router as dashboard_router
 from backend.routers.uav_router import router as uav_router
 from backend.routers.user_router import router as user_router
 
 
 def _include_routers(app: FastAPI):
-    app.include_router(uav_router, prefix='/api/v1/uav')
     app.include_router(user_router, prefix='/api/v1/users')
+    app.include_router(uav_router, prefix='/api/v1/uav')
+    app.include_router(dashboard_router, prefix='/api/v1/dashboards')
 
 
 def _mount(app: FastAPI):
@@ -48,7 +49,7 @@ def _configure_middlewares(app: FastAPI):
             'Authorization',
         ],
     )
-    app.add_middleware(JWTMiddleware, exclude_paths=['/docs', '/openapi.json', '/health'])
+    # app.add_middleware(JWTMiddleware, exclude_paths=['/docs', '/openapi.json', '/health'])
 
 
 def create_app() -> FastAPI:
