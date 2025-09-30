@@ -1,4 +1,5 @@
-import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import type { ReactNode } from 'react'
 
 const USERS_API_BASE = (import.meta.env.VITE_API_USERS_URL ?? '/api/v1/users').replace(/\/$/, '')
 const PROFILE_ENDPOINT =
