@@ -30,7 +30,12 @@ export function DashboardPage({
         </header>
         {hasEmbed ? (
           <div className="panel__embed">
-            <iframe src={embedUrl} title={embedTitle ?? title} allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
+            <iframe
+              src={embedUrl}
+              title={embedTitle ?? title}
+              allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
           </div>
         ) : (
           <div className="panel__placeholder" role="presentation" />
