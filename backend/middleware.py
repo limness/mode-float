@@ -19,7 +19,7 @@ class JWTKeycloakValidator:
     def __init__(self, keycloak_url: str, realm: str):
         self.keycloak_url = keycloak_url
         self.realm = realm
-        self.jwks_url = f'{keycloak_url}/sso/realms/{realm}/.well-known/openid-configuration'
+        self.jwks_url = f'{keycloak_url}/sso/realms/{realm}/protocol/openid-connect/certs'
 
     # @lru_cache(maxsize=1)
     async def get_jwks(self) -> Dict:
