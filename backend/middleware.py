@@ -14,6 +14,10 @@ logger = logging.getLogger(__name__)
 
 security = HTTPBearer()
 
+8d29452edcde:/float-mode# curl http://keycloak:8080/sso/realms/float-mode/protocol/openid-connect/certs
+{"keys":[{"kid":"y1QJn0ylLc4b-PjeN57PlNWji6Q5LimTf6ZPNR9Dbn4","kty":"RSA","alg":"RSA-OAEP","use":"enc","n":"2NphCgi50TE3U3GokmaLJYU2mKwq0ZiGH5MEpHeBbACZIn3J9x_cRfRRjD27rln3Hk3emdROhvCM81OuU1PhUfgrmCQaLp5ErjvOYiq6_qTnzdRNZKDRpA1yniaKEr8Fv_81CsPAj9OMo7khuZ0x4vw2FZfvoE4uM63J_HYOFGp2dxOzS3LzT0QodqZccEnuwsPWvwDYqBIaey17Ct16T6Il6CM-mz-801SYkkxa3dwxnhQ01Zhp8FfrztODWQgUiVKelftw","e":"AQAB","x5c":["MIICozCCAYsCBgGZiD88wjANBgkqhkiG9w0BAQsFADAVMRMwyNTYwOVoXDTM1MDkyNjIyNTc0OVowFTETMBEGA1UEAwwKZmxvYXQtbW9kZTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBANjaYQoIudExN1NxqJJmiyWFNpisKtGYhh+TBKR3r+olrHJ9yfcf3EX0UYw9u65Z9x5N3pnUTobwjPNTrlNT4VH4K5gkGi6eRK47zmIquv6k583UTWSg0aQNcp4mihK/Bb//NQrDwI/TjKO5IbmdMeL8NhWX76BOLjOtyfx2DhRqdncTs0ty809EKHai0veoOsLD1r8A2KgSGnstewrdek+iJegjPps/vNNUmJJMWt3cMZ4UNNWYafBX687Tg1kIFIlSnpX7cCAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAjoQ3Ao1zlhcpmuvB+GDSB29Ow1/j02w/5S6xgGYzRoD8quVVKpwhD4UvrC2Yd64Q5P4QlXoHTP1Z6yNQiccJpCCnxKmZ6hCYbrQEdlJle/zHcCzclhveaH9Vm8FgcP5GN6vkA9cqexledA53gMhFYEsJaC0M8k7BWbh51J4KiHh9wqrdDxSV5JzWDWQuCF6lxZYTVZSH5gQu/QwdlIhnZ6UQQtY2a2z4YE+ZnHaVhwmU52e1vkXg9Gw2cGzbw1w0Kk91uy9A=="],"x5t":"hZDQNRNk90DAS0YOwa55pJ7tqSs","x5t#S256":"ts8HBsaiYZ6sXYdanpIoLIKBYUueFMU7tfBu674GOxseFsiqacLP3Mmmoo","kty":"RSA","alg":"RS256","use":"sig","n":"wQSZEVbViLgLQtsL0w9hZmfs8lfrCeqGHV_rY1d6hBROKtld2tRXSqtyEtmQDd270jGwFeMztwq6zgRBJp3DOrfmSmEjZFk-dMheVx6HEN7aNJpaJT8uFT-dwYbugV-1JMQ0hrD8d8N4kC9a5EPKEXK5QvvKwquR_QQUEke9DhVOJmvFXY35wHbQiOPy8XQ1XhtlgXl8HVhxSa7MNZEMXW760WosDpMF6bcqL-h57aYEZnYMddLPJb3FQ9DhsmUUsMa0Fh6Q","e":"AQAB","x5c":["MIICozCCAYsCBgGZiD86eDANBgkqhkiG9w0BAQsFADAVMRMwEQYDVQQDDApmbG9hdC1tb2Rl0OVowFTETMBEGA1UEAwwKZmxvYXQtbW9kZTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMEEmRFW1Yi4C0LbC9MPYWZn7PJX6wnqhh1f62NXeoQUTirZXdrUV0qrchLZkA3duxDBPRXjM7cKus4EQSadwzq35kphI2RZPnTIXlcehxDe2jSaWiU/LhU/ncGG7oFftSTENIaw/HfDeJAvWuRDyhFyuUL7ysKrkf0EFBJHvQ4VTiZrxV2N+cB20Ijj8vF0NV4bZYF5fB1YcUmuzDWYOSIgytFqLA6TBem3Ki/oee2mBGZ2DHXSzyW9xUPQ4bJlFLDGtBYekCAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAGTnPNIoBzoGH2qElol+LjwbI7Rl1VdZ6frr5yjazsY+wVX5sdYJGifphqHD2+z2OVxvGXaYlV5+6zAVpv6PgzzPkI1jEmm3CgFuepWxwczAg/UoDnDAW7vdp6t1iDKHWgGSXsY09krNeKWmv2wv+MZmB3QNgP3J+b2S+ufgbSWucjBs6ZVRLVwCKEUGUqS67wkqWkfix38kfXI5Qe2QLF
+
+
 
 class JWTKeycloakValidator:
     def __init__(self, keycloak_url: str, realm: str):
@@ -76,7 +80,7 @@ class JWTKeycloakValidator:
                 public_key,
                 algorithms=['RS256'],
                 audience=keycloak_settings.KEYCLOAK_CLIENT_ID,
-                issuer=f'{self.keycloak_url}/realms/{self.realm}',
+                issuer=f'{self.keycloak_url}/sso/realms/{self.realm}',
             )
 
             return payload
