@@ -7,23 +7,35 @@ import { LoginPage } from './pages/LoginPage'
 import { RegisterPage } from './pages/RegisterPage'
 import { ProtectedRoute } from './components/auth/ProtectedRoute'
 
+const DATALENS_IDS = {
+  overview: import.meta.env.VITE_DATALENS_OVERVIEW_ID,
+  regions: import.meta.env.VITE_DATALENS_REGIONS_ID,
+  time: import.meta.env.VITE_DATALENS_TIME_ID,
+}
+
 const dashboardPages = [
-  { path: '/', title: 'Обзор', embedUrl: 'https://ru.wikipedia.org/wiki/Dashboard', groups: ['operator', 'admin'] },
-  { path: '/dashboard-2', title: 'Регионы', groups: ['operator', 'admin'] },
-  { path: '/dashboard-3', title: 'Время', groups: ['operator', 'admin'] },
+  {
+    path: '/',
+    title: 'Обзор',
+    embedId: DATALENS_IDS.overview,
+    embedUrl: DATALENS_IDS.overview ? undefined : 'https://ru.wikipedia.org/wiki/Dashboard',
+    groups: ['operator', 'admin'],
+  },
+  { path: '/dashboard-2', title: 'Регионы', embedId: DATALENS_IDS.regions, groups: ['operator', 'admin'] },
+  { path: '/dashboard-3', title: 'Время', embedId: DATALENS_IDS.time, groups: ['operator', 'admin'] },
 ]
 
 function App() {
   return (
     <Routes>
       <Route element={<AppLayout />}>
-        {dashboardPages.map(({ path, title, embedUrl, groups }) => (
+        {dashboardPages.map(({ path, title, embedUrl, embedId, groups }) => (
           <Route
             key={path}
             path={path}
             element={
               <ProtectedRoute groups={groups}>
-                <DashboardPage title={title} embedUrl={embedUrl} />
+                <DashboardPage title={title} embedUrl={embedUrl} embedId={embedId} />
               </ProtectedRoute>
             }
           />

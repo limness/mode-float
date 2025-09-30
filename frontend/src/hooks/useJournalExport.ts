@@ -98,6 +98,12 @@ export function useJournalExport(apiBase: string = API_BASE_URL) {
       })
 
       if (!response.ok) {
+        if (response.status >= 500) {
+          throw new Error('Сервер временно недоступен, попробуйте позже')
+        }
+        if (response.status === 404) {
+          throw new Error('За выбранный период данные отсутствуют')
+        }
         const message = await response.text()
         throw new Error(message || 'Не удалось экспортировать журнал')
       }

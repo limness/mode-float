@@ -17,6 +17,7 @@ interface UseJournalDataResult {
   rows: JournalRow[]
   isLoading: boolean
   error: string | null
+  notice: string | null
   refresh: () => Promise<void>
 }
 
@@ -95,10 +96,12 @@ export function useJournalData(limit = 30): UseJournalDataResult {
   const [raw, setRaw] = useState<RawFlight[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [notice, setNotice] = useState<string | null>(null)
 
   const fetchData = async () => {
     setIsLoading(true)
     try {
+      setNotice(null)
       const limitsResponse = await fetch(LIMITS_ENDPOINT, { credentials: 'include' })
       if (!limitsResponse.ok) {
         throw new Error('Не удалось получить доступный период')
@@ -137,9 +140,11 @@ export function useJournalData(limit = 30): UseJournalDataResult {
       }
       setRaw(items)
       setError(null)
+      setNotice(items.length ? null : "За выбранный период нет данных")
     } catch (err) {
       console.error('[journal] failed to fetch data', err)
-      setError(err instanceof Error ? err.message : 'Неизвестная ошибка')
+      setNotice('Показаны демонстрационные данные: нет подключения к базе данных')
+      setError(null)
       setRaw([])
     } finally {
       setIsLoading(false)
@@ -156,6 +161,7 @@ export function useJournalData(limit = 30): UseJournalDataResult {
     rows,
     isLoading,
     error,
+    notice,
     refresh: fetchData,
   }
 }

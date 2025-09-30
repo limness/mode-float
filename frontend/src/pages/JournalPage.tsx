@@ -50,7 +50,7 @@ export function JournalPage() {
     error: exportError,
     exportJournal,
   } = useJournalExport()
-  const { rows: latestRows, isLoading: isLoadingRows, error: rowsError } = useJournalData(30)
+  const { rows: latestRows, isLoading: isLoadingRows, error: rowsError, notice: rowsNotice } = useJournalData(30)
 
   const formatDisplayDate = (date: Date | null) => (date ? date.toLocaleDateString('ru-RU') : '—')
   const tableRows = (latestRows.length > 0 ? latestRows : fallbackRows).slice(0, 30)
@@ -98,7 +98,8 @@ export function JournalPage() {
             />
           </label>
         </div>
-        {(exportError || rowsError) && <p className="export-error">{exportError ?? rowsError}</p>}
+        {(exportError || rowsError) && <p className="export-error">{exportError ?? rowsError}</p>
+        {rowsNotice && <p className="export-hint">{rowsNotice}</p>}}
 
         <div className="table-card">
           {isLoadingRows ? (
