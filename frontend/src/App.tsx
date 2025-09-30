@@ -7,7 +7,7 @@ import { LoginPage } from './pages/LoginPage'
 import { RegisterPage } from './pages/RegisterPage'
 import { ProtectedRoute } from './components/auth/ProtectedRoute'
 
-const DATALENS_IDS = {
+const DATALENS_IDS: Record<string, string | undefined> = {
   overview: import.meta.env.VITE_DATALENS_OVERVIEW_ID,
   regions: import.meta.env.VITE_DATALENS_REGIONS_ID,
   time: import.meta.env.VITE_DATALENS_TIME_ID,
@@ -29,13 +29,13 @@ function App() {
   return (
     <Routes>
       <Route element={<AppLayout />}>
-        {dashboardPages.map(({ path, title, embedUrl, embedId, groups }) => (
+        {dashboardPages.map(({ path, title, embedUrl, embedId, embedTtlSeconds, embedParams, groups }) => (
           <Route
             key={path}
             path={path}
             element={
               <ProtectedRoute groups={groups}>
-                <DashboardPage title={title} embedUrl={embedUrl} embedId={embedId} />
+                <DashboardPage title={title} embedUrl={embedUrl} embedId={embedId} embedTtlSeconds={embedTtlSeconds} embedParams={embedParams} />
               </ProtectedRoute>
             }
           />

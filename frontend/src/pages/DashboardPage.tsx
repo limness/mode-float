@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { useDatalensEmbed } from '../hooks/useDatalensEmbed'
 
 interface DashboardPageProps {
@@ -24,7 +25,11 @@ export function DashboardPage({
     params: embedParams,
   })
 
-  const finalUrl = embedUrl ?? signedUrl
+  const finalUrl = useMemo(() => {
+    if (signedUrl) return signedUrl
+    return embedUrl
+  }, [signedUrl, embedUrl])
+
   const hasEmbed = Boolean(finalUrl)
 
   return (
@@ -50,7 +55,8 @@ export function DashboardPage({
               <div className="export-error">{embedError}</div>
             ) : (
               <iframe
-                src={finalUrl ?? undefined}
+                key={finalUrl}
+                src={finalUrl!}
                 title={embedTitle ?? title}
                 allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
