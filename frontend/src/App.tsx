@@ -29,7 +29,6 @@ const dashboardPages: Array<{
     path: '/',
     title: 'Обзор',
     embedId: DATALENS_IDS.overview,
-    embedUrl: DATALENS_IDS.overview ? undefined : 'https://ru.wikipedia.org/wiki/Dashboard',
     embedTtlSeconds: DEFAULT_EMBED_TTL,
     embedParams: DEFAULT_EMBED_PARAMS,
     groups: ['operator', 'admin'],
