@@ -129,7 +129,7 @@ make all-prod
 
 > [!IMPORTANT]
 > Для корректной работы Дашборда вам требуется учетная запись [yandex.cloud](https://yandex.cloud) (в том числе и
- [datalens.ru](https://datalens.ru))   
+ [datalens.ru](https://datalens.ru)) с заполненными данным.   
 
 
 ### 0. Создание Каталога 
