@@ -30,7 +30,8 @@ export function DashboardPage({
     return embedUrl
   }, [signedUrl, embedUrl])
 
-  const hasEmbed = Boolean(finalUrl)
+  const hasResolvedEmbed = Boolean(finalUrl)
+  const shouldRenderEmbedContainer = Boolean(embedId || embedUrl || signedUrl)
 
   return (
     <div className="page-shell">
@@ -47,13 +48,13 @@ export function DashboardPage({
         <header className="panel__header">
           <h1 className="panel__title">{title}</h1>
         </header>
-        {hasEmbed ? (
+        {shouldRenderEmbedContainer ? (
           <div className="panel__embed">
             {isEmbedLoading ? (
               <div className="export-hint">Готовим дашборд…</div>
             ) : embedError ? (
               <div className="export-error">{embedError}</div>
-            ) : (
+            ) : hasResolvedEmbed ? (
               <iframe
                 key={finalUrl}
                 src={finalUrl!}
@@ -61,6 +62,8 @@ export function DashboardPage({
                 allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               />
+            ) : (
+              <div className="export-hint">Ссылка на дашборд пока недоступна</div>
             )}
           </div>
         ) : (

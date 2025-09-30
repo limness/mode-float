@@ -7,10 +7,15 @@ import { LoginPage } from './pages/LoginPage'
 import { RegisterPage } from './pages/RegisterPage'
 import { ProtectedRoute } from './components/auth/ProtectedRoute'
 
+const normalizeEmbedId = (value: string | undefined) => {
+  const trimmed = value?.trim()
+  return trimmed ? trimmed : undefined
+}
+
 const DATALENS_IDS: Record<string, string | undefined> = {
-  overview: import.meta.env.VITE_DATALENS_OVERVIEW_ID,
-  regions: import.meta.env.VITE_DATALENS_REGIONS_ID,
-  time: import.meta.env.VITE_DATALENS_TIME_ID,
+  overview: normalizeEmbedId(import.meta.env.VITE_DATALENS_OVERVIEW_ID) ?? 'qu4h5tflyj82b',
+  regions: normalizeEmbedId(import.meta.env.VITE_DATALENS_REGIONS_ID),
+  time: normalizeEmbedId(import.meta.env.VITE_DATALENS_TIME_ID),
 }
 
 const DEFAULT_EMBED_TTL = 600
