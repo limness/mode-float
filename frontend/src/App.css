@@ -588,3 +588,38 @@
   font-size: 14px;
   color: var(--color-text-muted);
 }
+
+.export-controls {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.export-controls label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.export-controls input {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(12, 13, 17, 0.92);
+  color: var(--color-text-primary);
+  padding: 10px 14px;
+}
+
+.export-error {
+  margin: 0 0 16px;
+  color: #ff8484;
+  font-size: 13px;
+}
+
+.export-hint {
+  margin: 16px 0;
+  color: var(--color-text-muted);
+  font-size: 14px;
+  text-align: center;
+}
