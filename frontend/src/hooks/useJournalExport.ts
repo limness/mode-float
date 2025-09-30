@@ -5,7 +5,9 @@ interface LimitsResponse {
   max_date: string
 }
 
-export function useJournalExport(apiBase: string = '/api/v1/uav') {
+const API_BASE_URL = (import.meta.env.VITE_API_UAV_URL ?? '/api/v1/uav').replace(/\/$/, '')
+
+export function useJournalExport(apiBase: string = API_BASE_URL) {
   const [minDate, setMinDate] = useState<Date | null>(null)
   const [maxDate, setMaxDate] = useState<Date | null>(null)
   const [fromDate, setFromDate] = useState<string>('')
@@ -22,7 +24,7 @@ export function useJournalExport(apiBase: string = '/api/v1/uav') {
     const loadLimits = async () => {
       setIsLoadingLimits(true)
       try {
-        const response = await fetch(`${apiBase}/journal/limits`, {
+        const response = await fetch(`${apiBase}/date-bounds`, {
           credentials: 'include',
         })
         if (!response.ok) {
@@ -83,13 +85,16 @@ export function useJournalExport(apiBase: string = '/api/v1/uav') {
       setIsExporting(true)
       setError(null)
 
-      const params = new URLSearchParams({
-        from: new Date(fromDate).toISOString(),
-        to: new Date(toDate).toISOString(),
-      })
+      const payload = {
+        min_date: new Date(fromDate).toISOString(),
+        max_date: new Date(toDate).toISOString(),
+      }
 
-      const response = await fetch(`${apiBase}/journal/export?${params.toString()}`, {
+      const response = await fetch(`${apiBase}/date-bounds/query`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
+        body: JSON.stringify(payload),
       })
 
       if (!response.ok) {

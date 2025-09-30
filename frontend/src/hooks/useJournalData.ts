@@ -22,6 +22,7 @@ interface UseJournalDataResult {
 
 const API_BASE_URL = (import.meta.env.VITE_API_UAV_URL ?? '/api/v1/uav').replace(/\/$/, '')
 const JOURNAL_ENDPOINT = `${API_BASE_URL}/date-bounds/query`
+const LIMITS_ENDPOINT = `${API_BASE_URL}/date-bounds`
 
 function formatDateTime(value: unknown): { date: string; time: string } {
   if (typeof value === 'string' || value instanceof Date) {
@@ -98,8 +99,29 @@ export function useJournalData(limit = 30): UseJournalDataResult {
   const fetchData = async () => {
     setIsLoading(true)
     try {
-      const response = await fetch(`${JOURNAL_ENDPOINT}?limit=${limit}`, {
+      const limitsResponse = await fetch(LIMITS_ENDPOINT, { credentials: 'include' })
+      if (!limitsResponse.ok) {
+        throw new Error('Не удалось получить доступный период')
+      }
+      const limits = (await limitsResponse.json()) as { min_date: string | null; max_date: string | null }
+      const max = limits.max_date ? new Date(limits.max_date) : new Date()
+      const minBound = limits.min_date ? new Date(limits.min_date) : null
+      if (Number.isNaN(max.getTime())) {
+        throw new Error('Некорректная максимальная дата')
+      }
+      const windowMs = 7 * 24 * 60 * 60 * 1000
+      const candidateFrom = new Date(max.getTime() - windowMs)
+      const from = minBound && candidateFrom < minBound ? minBound : candidateFrom
+      const body = {
+        min_date: from.toISOString(),
+        max_date: max.toISOString(),
+        limit,
+      }
+      const response = await fetch(JOURNAL_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
+        body: JSON.stringify(body),
       })
       if (!response.ok) {
         throw new Error('Не удалось загрузить последние полёты')
