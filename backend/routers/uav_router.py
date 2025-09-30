@@ -16,6 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from backend.database.base import get_database
 from backend.exc import IDException
 from backend.schemas.file_schema import FileUploadResponseSchema
+from backend.schemas.uav_schema import DateBoundsResponse
 from backend.services.exceptions import (
     FileCreateError,
     FileDeactivateError,
@@ -31,7 +32,7 @@ from backend.services.parse_service.geocoder import DefaultGeocoder
 from backend.services.parse_service.loader import ExcelLoader
 from backend.services.parse_service.mapper import DefaultMapper
 from backend.services.parse_service.mapper import UavFlightModel as ParsedUavFlight
-from backend.services.uav_service import create_uav_flight
+from backend.services.uav_service import create_uav_flight, get_uav_date_bounds
 
 router = APIRouter(tags=['Files'])
 
@@ -185,3 +186,16 @@ async def process_xlsx_file(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f'Unexpected parsing error: {str(exc)}',
         )
+
+
+@router.get(
+    '/date-bounds',
+    status_code=status.HTTP_202_OK
+)
+async def get_date_bounds(db_session: AsyncSession = Depends(get_database)) -> DateBoundsResponse:
+    min_date, max_date = await get_uav_date_bounds(db_session)
+    return DateBoundsResponse(
+        min_date=min_date.isoformat() if min_date else None,
+        max_date=max_date.isoformat() if max_date else None,
+    )
+

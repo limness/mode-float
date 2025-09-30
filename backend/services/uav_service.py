@@ -136,3 +136,11 @@ async def create_uav_flight(
         return flight
     except SQLAlchemyError as exc:
         raise UavFlightCreateError(f'Failed to create UAV flight: {exc}') from exc
+
+
+async def get_uav_date_bounds(db_session: AsyncSession):
+    try:
+        min_date, max_date = await uav_flight_repo.get_date_bounds(db_session)
+        return min_date, max_date
+    except SQLAlchemyError as exc:
+        raise UavFlightCreateError(f'Failed to get date bounds: {exc}') from exc
