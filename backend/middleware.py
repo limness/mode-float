@@ -57,8 +57,6 @@ class JWTKeycloakValidator:
 
             # Get JWKS keys
             jwks = await self.get_jwks()
-            print(jwks, '//', kid)
-            logger.info('jwt %s /// %s', jwks, kid)
 
             # Find matching key
             key_data = self.get_key_by_kid(jwks, kid)
@@ -76,7 +74,6 @@ class JWTKeycloakValidator:
                 public_key,
                 algorithms=['RS256'],
                 audience=keycloak_settings.KEYCLOAK_CLIENT_ID,
-                issuer=f'{self.keycloak_url}/sso/realms/{self.realm}',
             )
 
             return payload
