@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 interface UseDatalensEmbedOptions {
   ttlSeconds?: number
@@ -16,6 +16,7 @@ interface EmbedState {
 
 export function useDatalensEmbed(embedId?: string, options?: UseDatalensEmbedOptions): EmbedState {
   const [state, setState] = useState<EmbedState>({ url: null, isLoading: Boolean(embedId), error: null })
+  const serializedParams = useMemo(() => JSON.stringify(options?.params ?? {}), [options?.params])
 
   useEffect(() => {
     if (!embedId) {
@@ -23,10 +24,10 @@ export function useDatalensEmbed(embedId?: string, options?: UseDatalensEmbedOpt
       return
     }
 
-    let cancelled = false
+    const controller = new AbortController()
 
     const fetchEmbed = async () => {
-      setState(prev => ({ ...prev, isLoading: true, error: null }))
+      setState((prev) => ({ ...prev, isLoading: true, error: null }))
       try {
         const response = await fetch(EMBED_ENDPOINT, {
           method: 'POST',
@@ -37,6 +38,7 @@ export function useDatalensEmbed(embedId?: string, options?: UseDatalensEmbedOpt
             ttl_seconds: options?.ttlSeconds,
             params: options?.params,
           }),
+          signal: controller.signal,
         })
 
         if (!response.ok) {
@@ -45,10 +47,11 @@ export function useDatalensEmbed(embedId?: string, options?: UseDatalensEmbedOpt
         }
 
         const payload = (await response.json()) as { url: string }
-        if (cancelled) return
         setState({ url: payload.url, isLoading: false, error: null })
       } catch (error) {
-        if (cancelled) return
+        if (controller.signal.aborted) {
+          return
+        }
         setState({
           url: null,
           isLoading: false,
@@ -60,9 +63,9 @@ export function useDatalensEmbed(embedId?: string, options?: UseDatalensEmbedOpt
     void fetchEmbed()
 
     return () => {
-      cancelled = true
+      controller.abort()
     }
-  }, [embedId, JSON.stringify(options?.params ?? {}), options?.ttlSeconds])
+  }, [embedId, serializedParams, options?.ttlSeconds])
 
   return state
 }
