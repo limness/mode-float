@@ -3,10 +3,9 @@ import { PiNotebookBold, PiSquaresFourBold, PiUploadSimpleBold } from 'react-ico
 import { classNames } from '../../utils/classNames'
 
 const navItems = [
-  { label: 'Дашборд', to: '/', icon: PiSquaresFourBold },
-  { label: 'Дашборд', to: '/dashboard-2', icon: PiSquaresFourBold },
-  { label: 'Дашборд', to: '/dashboard-3', icon: PiSquaresFourBold },
-  { label: 'Дашборд', to: '/dashboard-4', icon: PiSquaresFourBold },
+  { label: 'Обзор', to: '/', icon: PiSquaresFourBold },
+  { label: 'Регионы', to: '/dashboard-2', icon: PiSquaresFourBold },
+  { label: 'Время', to: '/dashboard-3', icon: PiSquaresFourBold },
   { label: 'Отчёт', to: '/upload', icon: PiUploadSimpleBold },
   { label: 'Журнал', to: '/journal', icon: PiNotebookBold },
 ]

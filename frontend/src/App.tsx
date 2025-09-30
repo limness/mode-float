@@ -7,10 +7,9 @@ import { LoginPage } from './pages/LoginPage'
 import { RegisterPage } from './pages/RegisterPage'
 
 const dashboardPages = [
-  { path: '/', title: 'Дашборд 1', embedUrl: 'https://datalens.ru/txyv26ng090ge?_no_controls=1&tab=7g' },
-  { path: '/dashboard-2', title: 'Дашборд 2' },
-  { path: '/dashboard-3', title: 'Дашборд 3' },
-  { path: '/dashboard-4', title: 'Дашборд 4' },
+  { path: '/', title: 'Обзор', embedUrl: 'https://datalens.ru/txyv26ng090ge?_no_controls=1&tab=7g' },
+  { path: '/dashboard-2', title: 'Регионы' },
+  { path: '/dashboard-3', title: 'Время' },
 ]
 
 function App() {
