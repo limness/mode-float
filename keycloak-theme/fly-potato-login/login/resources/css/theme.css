@@ -1,7 +1,8 @@
 :root {
   --color-bg: #0b0c11;
   --color-card: rgba(18, 20, 30, 0.92);
-  --color-accent: #5161ff;
+  --color-accent: #3f4bff;
+  --color-accent-hover: #5a64ff;
   --color-text: #f5f7ff;
   --color-muted: rgba(245, 247, 255, 0.64);
   --radius-card: 24px;
@@ -49,7 +50,7 @@ body.vibecodin-login {
   border-radius: 16px;
   display: grid;
   place-items: center;
-  background: rgba(81, 97, 255, 0.16);
+  background: rgba(63, 75, 255, 0.16);
   color: var(--color-accent);
   font-size: 28px;
   font-weight: 700;
@@ -104,7 +105,7 @@ body.vibecodin-login {
 }
 
 .auth-field input:focus {
-  outline: 2px solid rgba(81, 97, 255, 0.55);
+  outline: 2px solid rgba(63, 75, 255, 0.55);
 }
 
 .auth-form__footer {
@@ -135,18 +136,25 @@ body.vibecodin-login {
 .auth-submit {
   border: none;
   border-radius: 16px;
-  padding: 14px 18px;
-  background: linear-gradient(135deg, #7c86ff, #5665ff);
-  color: white;
+  padding: 14px 20px;
+  background: var(--color-accent);
+  color: #fff;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 12px 28px rgba(63, 75, 255, 0.32);
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .auth-submit:hover {
+  background: var(--color-accent-hover);
   transform: translateY(-1px);
-  box-shadow: 0 16px 32px rgba(86, 101, 255, 0.35);
+  box-shadow: 0 16px 32px rgba(63, 75, 255, 0.38);
+}
+
+.auth-submit:focus-visible {
+  outline: 2px solid rgba(63, 75, 255, 0.55);
+  outline-offset: 2px;
 }
 
 .auth-divider {
