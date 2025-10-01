@@ -4,7 +4,7 @@ set -euo pipefail
 # run before using (for mermaid graphs compiling)
 # sudo npm i -g @mermaid-js/mermaid-cli
 
-SRCDIR="docs"
+SRCDIR="../docs"
 OUTPDFDIR="pdf"
 TEMPLATE="templates/eis.gost.tex"
 METADATA="refs.yaml"
@@ -14,7 +14,7 @@ MERMAID_LUA="${FILTERS_DIR}/mermaid.lua"
 MERMAID_OUTDIR_ABS="${SRCDIR}/static/mermaid"
 MERMAID_OUTDIR_REL="static/mermaid"
 
-FILES=( "spec.md" "pmi.md" "test_report.md" "acceptance_act.md" "admin_manual.md" "user_manual.md" )
+FILES=( "admin_manual.md" "user_manual.md" )
 
 command -v pandoc  >/dev/null || { echo "pandoc not found"; exit 1; }
 command -v xelatex >/dev/null || { echo "xelatex not found"; exit 1; }
