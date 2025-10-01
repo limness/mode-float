@@ -34,8 +34,8 @@ services:
   migration:
     build: .
     command: sh -c 'poetry run alembic upgrade head'
-#    volumes:
-#      - './alembic/versions:/float-mode/alembic/versions'
+    #    volumes:
+    #      - './alembic/versions:/float-mode/alembic/versions'
     environment:
       POSTGRES_URI: ${POSTGRES_URI:-postgresql+asyncpg://postgres:postgres@postgres:5432/float-mode}
     depends_on:
@@ -53,6 +53,7 @@ services:
       - .env.dev
     environment:
       POSTGRES_URI: 'postgresql+asyncpg://postgres:postgres@postgres:5432/float-mode'
+      LOAD_RUSSIA_REGIONS: '${LOAD_RUSSIA_REGIONS:-true}'
     restart: always
     networks:
       - float-net
@@ -164,8 +165,8 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/certs:/etc/nginx/certs:ro
-#    depends_on:
-#      - oauth2-proxy
+    #    depends_on:
+    #      - oauth2-proxy
     networks:
       - float-net
     profiles:

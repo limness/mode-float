@@ -34,6 +34,7 @@ ADD alembic.ini .
 ADD alembic ./alembic
 ADD logs ./logs
 ADD backend ./backend
+ADD scripts ./scripts
 
 COPY --from=frontend /app/frontend/dist ./backend/static
 
