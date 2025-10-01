@@ -76,7 +76,7 @@ async def save_regions_to_db(region_polygons: RegionPolygons, db_session: AsyncS
                 continue
             shapely_poly = max(valid_polygons, key=lambda p: p.area)
             geopolygon = from_shape(shapely_poly, srid=4326)
-            geopolygon_str = [[y, x] for x, y in shapely_poly.exterior.coords]
+            geopolygon_str = str([[[y, x] for x, y in shapely_poly.exterior.coords]])
             shapely_poly_m = transform(project, shapely_poly)
             area = int(shapely_poly_m.area) / 1000000
             existing = await db_session.execute(
