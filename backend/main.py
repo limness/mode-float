@@ -1,3 +1,4 @@
+import logging
 import os
 
 from fastapi import FastAPI
@@ -5,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
-from backend.core.settings import application_settings
+from backend.core.settings import LOGGING_CONFIG, application_settings
 from backend.middleware import JWTMiddleware
 from backend.routers.dashboard_router import router as dashboard_router
 from backend.routers.region_router import router as region_router
@@ -59,6 +60,8 @@ def _configure_middlewares(app: FastAPI):
 
 
 def create_app() -> FastAPI:
+    logging.config.dictConfig(LOGGING_CONFIG)
+
     app = FastAPI(
         title=application_settings.APP_TITLE,
         debug=application_settings.APP_DEBUG,

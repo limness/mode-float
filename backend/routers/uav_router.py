@@ -1,4 +1,5 @@
 import io
+import logging
 
 import openpyxl
 import pandas as pd
@@ -42,6 +43,8 @@ router = APIRouter(tags=['Files'])
 
 MAX_FILE_SIZE = 50 * 1024 * 1024
 
+logger = logging.getLogger(__name__)
+
 
 @router.post(
     '/upload/xlsx',
@@ -66,6 +69,7 @@ async def upload_xlsx_file(
     - 413: превышен допустимый размер файла
     - 500: ошибка обработки или записи данных
     """
+    logger.info('File creation')
     if not file.filename.lower().endswith(('.xlsx', '.xls')):
         raise IDException(
             status_code=status.HTTP_400_BAD_REQUEST, detail='Only XLSX/XLS files are allowed!'
@@ -175,7 +179,7 @@ async def process_xlsx_file(
 
                 for _, row in df.iterrows():
                     parsed: ParsedUavFlight = mapper.map_row(row)
-                    logger.info('mapped %s', _)
+                    logger.info('mapped %s / %s', _, df.shape)
 
                     await create_uav_flight(
                         db_session,
