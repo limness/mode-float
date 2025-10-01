@@ -76,12 +76,7 @@ function buildProfile(payload: RawProfileResponse): Profile {
 
   const rawGroups = payload.groups?.filter(Boolean) ?? []
   const normalizedGroups: NormalizedGroup[] = []
-  let displayGroup = '—'
-
-  if (rawGroups.length === 0) {
-    normalizedGroups.push('admin')
-    displayGroup = 'Администратор'
-  }
+  let displayGroup = rawGroups.length === 0 ? 'Нет доступа' : '—'
 
   for (const raw of rawGroups) {
     const { normalized, display } = normalizeGroup(raw)

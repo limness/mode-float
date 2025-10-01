@@ -20,7 +20,7 @@ export function ProtectedRoute({ children, groups }: ProtectedRouteProps) {
   }
 
   if (groups && !hasGroup(groups)) {
-    return <Navigate to="/" replace />
+    return <Navigate to="/no-access" state={{ from: location }} replace />
   }
 
   return <>{children}</>

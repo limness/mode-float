@@ -6,6 +6,7 @@ import { JournalPage } from './pages/JournalPage'
 import { LoginPage } from './pages/LoginPage'
 import { RegisterPage } from './pages/RegisterPage'
 import { ProtectedRoute } from './components/auth/ProtectedRoute'
+import { NoAccessPage } from './pages/NoAccessPage'
 
 const normalizeEmbedId = (value: string | undefined) => {
   const trimmed = value?.trim()
@@ -84,6 +85,14 @@ function App() {
           element={
             <ProtectedRoute groups={['admin']}>
               <JournalPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/no-access"
+          element={
+            <ProtectedRoute>
+              <NoAccessPage />
             </ProtectedRoute>
           }
         />
