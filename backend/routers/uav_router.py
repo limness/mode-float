@@ -54,6 +54,18 @@ async def upload_xlsx_file(
     description: str | None = Form(None),
     db_session: AsyncSession = Depends(get_database),
 ) -> FileUploadResponseSchema:
+    """Загрузка и обработка Excel-файла с данными полётов БВС.
+
+    Проверяется расширение и размер файла, читаются имена листов, создаётся
+    запись о файле. Далее данные с каждого листа построчно парсятся и
+    сохраняются как полёты, после чего статус файла обновляется. При
+    необходимости предыдущие активные версии деактивируются.
+
+    - 201: файл успешно загружен и обработан
+    - 400: неверный формат файла
+    - 413: превышен допустимый размер файла
+    - 500: ошибка обработки или записи данных
+    """
     if not file.filename.lower().endswith(('.xlsx', '.xls')):
         raise IDException(
             status_code=status.HTTP_400_BAD_REQUEST, detail='Only XLSX/XLS files are allowed!'
@@ -142,6 +154,12 @@ async def process_xlsx_file(
     file_io: io.BytesIO,
     file_id: str,
 ) -> None:
+    """Парсинг Excel-файла и сохранение полётов в БД.
+
+    Итерируется по листам и строкам, выполняется маппинг полёта и создание
+    записи, связанной с `file_id`. Исключения пробрасываются наверх для
+    корректной обработки в вызывающем хэндлере.
+    """
     import logging
 
     logger = logging.getLogger(__name__)
@@ -194,6 +212,13 @@ async def process_xlsx_file(
 
 @router.get('/date-bounds', status_code=status.HTTP_200_OK)
 async def get_date_bounds(db_session: AsyncSession = Depends(get_database)) -> DateBoundsResponse:
+    """Вернуть минимальную и максимальную дату полётов в базе.
+
+    Возвращает ISO-строки дат (или `null`, если данных нет).
+
+    - 200: границы дат получены
+    - 404: ошибка вычисления границ
+    """
     try:
         min_date, max_date = await get_uav_date_bounds(db_session)
         return DateBoundsResponse(
@@ -212,6 +237,14 @@ async def get_flights_between_dates(
     bounds: DateBoundsResponse,
     db_session: AsyncSession = Depends(get_database),
 ) -> list[dict]:
+    """Получить полёты БВС в заданном диапазоне дат.
+
+    Принимает границы (`min_date`, `max_date`) и возвращает список записей
+    полётов в словарном представлении.
+
+    - 200: данные успешно получены
+    - 404: ошибка при запросе
+    """
     try:
         flights = await get_uav_flights_between_dates(db_session, bounds=bounds)
         return flights

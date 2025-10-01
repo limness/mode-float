@@ -17,6 +17,17 @@ async def upload_shapefile(
     dbf: UploadFile = File(...),
     db_session: AsyncSession = Depends(get_database),
 ):
+    """Загрузка границ регионов из пары файлов Shapefile (.shp и .dbf).
+
+    Ожидает два файла: основной геометрический файл `.shp` и файл атрибутов `.dbf`.
+    После чтения и парсинга полигоны группируются по региону и сохраняются в БД.
+
+    Возвращает список идентификаторов/названий регионов, которые были распознаны.
+
+    - 201: файлы успешно обработаны и регионы сохранены
+    - 400: переданы файлы неверного формата
+    - 404: ошибка чтения/парсинга или сохранения
+    """
     if not (shp.filename.lower().endswith('.shp') and dbf.filename.lower().endswith('.dbf')):
         raise IDException(
             status_code=status.HTTP_400_BAD_REQUEST, detail='Only .shp and .dbf files are allowed!'

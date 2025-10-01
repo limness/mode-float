@@ -19,12 +19,12 @@ router = APIRouter(tags=['Dashboards'])
 async def create_datalens_embed_url(
     body: DatalensEmbedRequestSchema,
 ) -> DatalensEmbedResponseSchema:
-    """Issue a short-lived secure embed URL for DataLens.
+    """Выдать короткоживущую безопасную ссылку для встраивания DataLens.
 
-    Security notes:
-      * Private key must reside on backend only (Vault/Lockbox/KMS/K8s Secret).
-      * Use short TTL (2–10 minutes) whenever possible.
-      * Validate caller's authorization to view the requested embed_id.
+    Примечания по безопасности:
+      * Приватный ключ хранится только на бэкенде (Vault/Lockbox/KMS/секреты K8s).
+      * Используйте короткий TTL (2–10 минут), когда это возможно.
+      * Проверяйте права вызывающей стороны на запрошенный `embed_id`.
     """
     ttl = body.ttl_seconds or datalens_settings.DEFAULT_TTL_SECONDS
     if ttl < datalens_settings.MIN_TTL_SECONDS or ttl > datalens_settings.MAX_TTL_SECONDS:
