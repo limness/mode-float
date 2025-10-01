@@ -1,0 +1,152 @@
+\documentclass[12pt,a4paper]{article}
+
+\usepackage{ifxetex,ifluatex}
+\ifxetex
+  \usepackage{polyglossia}
+  \setdefaultlanguage{russian}
+  \setotherlanguage{english}
+  \usepackage{fontspec}
+  \defaultfontfeatures{Ligatures=TeX, Scale=MatchLowercase}
+  \IfFontExistsTF{TeX Gyre Termes}{\setmainfont{TeX Gyre Termes}}{\IfFontExistsTF{Times New Roman}{\setmainfont{Times New Roman}}{\setmainfont{Times}}}
+  \IfFontExistsTF{TeX Gyre Heros}{\setsansfont{TeX Gyre Heros}}{\IfFontExistsTF{Arial}{\setsansfont{Arial}}{\setsansfont{Helvetica}}}
+  \IfFontExistsTF{TeX Gyre Cursor}{\setmonofont{TeX Gyre Cursor}}{\IfFontExistsTF{Courier New}{\setmonofont{Courier New}}{\setmonofont{Courier}}}
+\else\ifluatex
+  \usepackage{polyglossia}
+  \setdefaultlanguage{russian}
+  \setotherlanguage{english}
+  \usepackage{fontspec}
+  \defaultfontfeatures{Ligatures=TeX, Scale=MatchLowercase}
+  \IfFontExistsTF{TeX Gyre Termes}{\setmainfont{TeX Gyre Termes}}{\IfFontExistsTF{Times New Roman}{\setmainfont{Times New Roman}}{\setmainfont{Times}}}
+  \IfFontExistsTF{TeX Gyre Heros}{\setsansfont{TeX Gyre Heros}}{\IfFontExistsTF{Arial}{\setsansfont{Arial}}{\setsansfont{Helvetica}}}
+  \IfFontExistsTF{TeX Gyre Cursor}{\setmonofont{TeX Gyre Cursor}}{\IfFontExistsTF{Courier New}{\setmonofont{Courier New}}{\setmonofont{Courier}}}
+\else
+  \usepackage[T2A]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage[russian]{babel}
+\fi\fi
+
+\usepackage[a4paper, top=20mm, bottom=20mm, left=20mm, right=20mm, headsep=6mm]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+
+\usepackage{graphicx}
+\usepackage{array,booktabs,longtable,tabularx}
+\usepackage{enumitem}
+\setlist{nosep}
+\usepackage{float}
+\usepackage{caption}
+\captionsetup{font=small}
+\usepackage{calc}
+\providecommand{\real}[1]{#1}
+
+\providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\pagestyle{fancy}
+\fancyhf{}
+\chead{$if(project_title)$$project_title$$else$$title$$endif$}
+\rhead{Стр. \thepage\ из \pageref{LastPage}}
+\cfoot{}
+
+\usepackage{titlesec}
+\titleformat{\section}{\bfseries\large}{\thesection}{1em}{}
+\titleformat{\subsection}{\bfseries\normalsize}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\bfseries\normalsize}{\thesubsubsection}{1em}{}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+\usepackage{listings}
+\lstset{basicstyle=\ttfamily\small, breaklines=true, frame=single, framerule=0.2pt}
+
+\newcommand{\MetaTitle}{$if(title)$$title$$else$Документ$endif$}
+\newcommand{\MetaSubtitle}{$if(subtitle)$$subtitle$$else$$endif$}
+\newcommand{\MetaVersion}{$if(version)$$version$$else$0.1$endif$}
+\newcommand{\MetaProjectTitle}{$if(project_title)$$project_title$$else$$title$$endif$}
+\newcommand{\MetaOrgCustomer}{$if(org_customer)$$org_customer$$else$Заказчик$endif$}
+\newcommand{\MetaOrgExecutor}{$if(org_executor)$$org_executor$$else$Исполнитель$endif$}
+\newcommand{\MetaDocCodePrefix}{$if(doc_code_prefix)$$doc_code_prefix$$else$PRJ$endif$}
+\newcommand{\MetaDate}{$if(date)$$date$$else$\today$endif$}
+
+\newcommand{\MetaAManSubtitle}{$if(admin_manual_subtitle)$$admin_manual_subtitle$$else$$endif$}
+\newcommand{\MetaPMISubtitle}{$if(pmi_subtitle)$$pmi_subtitle$$else$$endif$}
+\newcommand{\MetaRepSubtitle}{$if(test_report_subtitle)$$test_report_subtitle$$else$$endif$}
+\newcommand{\MetaUManSubtitle}{$if(user_manual_subtitle)$$user_manual_subtitle$$else$$endif$}
+\newcommand{\MetaSpecSubtitle}{$if(spec_subtitle)$$spec_subtitle$$else$$endif$}
+
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=black, urlcolor=black, citecolor=black,
+  pdfauthor={\MetaOrgExecutor},
+  pdftitle={\MetaTitle}
+}
+
+\makeatletter
+\def\maketitle{%
+\begin{titlepage}
+  \thispagestyle{empty}
+  \begin{center}
+    {\Large \textbf{\MetaProjectTitle}}\\[2mm]
+    {\small (\MetaOrgCustomer\ /\ \MetaOrgExecutor)}\\[10mm]
+
+    {\LARGE \textbf{\MetaTitle}}\\[1mm]
+    $if(subtitle)$\MetaSubtitle\\[1mm]$endif$
+    $if(admin_manual_subtitle_active)$\MetaAManSubtitle\\[1mm]$endif$
+    $if(pmi_subtitle_active)$\MetaPMISubtitle\\[1mm]$endif$
+    $if(test_report_subtitle_active)$\MetaRepSubtitle\\[1mm]$endif$
+    $if(user_manual_subtitle_active)$\MetaUManSubtitle\\[1mm]$endif$
+    $if(spec_subtitle_active)$\MetaSpecSubtitle\\[1mm]$endif$
+
+    \vspace{8mm}
+
+    \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}X >{\raggedleft\arraybackslash}X@{}}
+      \textbf{Код проекта:} \MetaDocCodePrefix & \textbf{Версия:} \MetaVersion \\
+      \textbf{Дата:} \MetaDate & \textbf{Страниц:} \pageref{LastPage} \\
+    \end{tabularx}
+
+    $if(author)$
+    \vspace{6mm}
+    {\small
+    \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}X >{\raggedleft\arraybackslash}X@{}}
+      \multicolumn{2}{@{}l@{}}{\textbf{Авторы / роли}}\\[1mm]
+      $for(author)$
+      $if(author.name)$$author.name$$endif$ &
+      $if(author.role)$$author.role$$endif$ \\
+      $endfor$
+    \end{tabularx}}
+    $endif$
+
+    \vfill
+
+    \textbf{СОГЛАСОВАНО / УТВЕРЖДЕНО}\\[2mm]
+    \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}X >{\raggedleft\arraybackslash}X@{}}
+      \textbf{От заказчика:} \dotfill & \textbf{От исполнителя:} \dotfill \\
+      Должность, ФИО, подпись, дата & Должность, ФИО, подпись, дата \\
+    \end{tabularx}
+
+    \vspace{10mm}
+    {\small © \MetaOrgExecutor, \the\year}
+  \end{center}
+\end{titlepage}
+}
+\makeatother
+
+\usepackage{tocloft}
+\renewcommand{\contentsname}{Содержание}
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+
+\begin{document}
+
+\maketitle
+
+$if(abstract)$
+\begin{flushleft}\textbf{Аннотация.} $abstract$\end{flushleft}
+$endif$
+
+\tableofcontents
+\newpage
+
+$body$
+
+\end{document}
