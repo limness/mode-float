@@ -1,7 +1,7 @@
 from datetime import datetime
-from dateutil.parser import isoparse
 from typing import Any
 
+from dateutil.parser import isoparse
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -158,7 +158,9 @@ async def get_uav_flights_between_dates(db_session: AsyncSession, *, bounds: Dat
         min_user = isoparse(bounds.min_date)
         max_user = isoparse(bounds.max_date)
         if min_user < min_db or max_user > max_db:
-            raise ValueError(f'Search bounds ({bounds.min_date} - {bounds.max_date}) are outside the allowed range ({min_db} - {max_db})')
+            raise ValueError(
+                f'Search bounds ({bounds.min_date} - {bounds.max_date}) are outside the allowed range ({min_db} - {max_db})'
+            )
         flights = await uav_flight_repo.get_flights_between_dates(db_session, bounds)
         return [flight.__dict__ for flight in flights]
     except SQLAlchemyError as exc:

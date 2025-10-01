@@ -6,10 +6,11 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from backend.core.settings import application_settings
+from backend.middleware import JWTMiddleware
 from backend.routers.dashboard_router import router as dashboard_router
+from backend.routers.region_router import router as region_router
 from backend.routers.uav_router import router as uav_router
 from backend.routers.user_router import router as user_router
-from backend.routers.region_router import router as region_router
 
 
 def _include_routers(app: FastAPI):
@@ -51,7 +52,7 @@ def _configure_middlewares(app: FastAPI):
             'Authorization',
         ],
     )
-    # app.add_middleware(JWTMiddleware, exclude_paths=['/docs', '/openapi.json', '/health'])
+    app.add_middleware(JWTMiddleware, exclude_paths=['/docs', '/openapi.json', '/health'])
 
 
 def create_app() -> FastAPI:
