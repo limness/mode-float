@@ -20,7 +20,7 @@ from backend.database.base import get_database
 from backend.dto import UavFlightCreateDTO
 from backend.exc import IDException
 from backend.schemas.file_schema import FileUploadResponseSchema
-from backend.schemas.uav_schema import DateBoundsResponse
+from backend.schemas.uav_schema import DateBoundsQuery, DateBoundsResponse
 from backend.services.exceptions import (
     FileCreateError,
     FileDeactivateError,
@@ -193,7 +193,7 @@ async def process_xlsx_file(
         )
 
 
-@router.get('/date-bounds', status_code=status.HTTP_200_OK)
+@router.post('/date-bounds', status_code=status.HTTP_200_OK)
 async def get_date_bounds(db_session: AsyncSession = Depends(get_database)) -> DateBoundsResponse:
     """Вернуть минимальную и максимальную дату полётов в базе.
 
@@ -215,27 +215,25 @@ async def get_date_bounds(db_session: AsyncSession = Depends(get_database)) -> D
         )
 
 
-@router.get('/date-bounds/query', status_code=status.HTTP_200_OK)
+@router.get('/journal-json', status_code=status.HTTP_200_OK)
 async def get_flights_between_dates(
-    min_date: str = Query(..., description='Начальная дата диапазона в формате ISO 8601'),
-    max_date: str = Query(..., description='Конечная дата диапазона в формате ISO 8601'),
+    min_date: str = Query(..., description='Начальная дата диапазона в ISO 8601'),
+    max_date: str = Query(..., description='Конечная дата диапазона в ISO 8601'),
     limit: int | None = Query(None, ge=1, le=1000, description='Максимальное количество записей'),
     db_session: AsyncSession = Depends(get_database),
 ) -> list[dict]:
-    """Получить полёты БВС в заданном диапазоне дат.
-
-    Принимает границы (`min_date`, `max_date`) и возвращает список записей
-    полётов в словарном представлении.
-
-    - 200: данные успешно получены
-    - 404: ошибка при запросе
-    """
+    """Получить полёты БВС в заданном диапазоне дат."""
     try:
-        bounds = DateBoundsResponse(min_date=min_date, max_date=max_date)
-        flights = await get_uav_flights_between_dates(db_session, bounds=bounds, limit=limit)
+        query = DateBoundsQuery(min_date=min_date, max_date=max_date, limit=limit)
+        flights = await get_uav_flights_between_dates(db_session, query=query)
         return flights
+    except ValueError as exc:
+        raise IDException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(exc),
+        )
     except Exception as exc:
         raise IDException(
-            status_code=status.HTTP_404_NOT_FOUND,
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=str(exc),
         )

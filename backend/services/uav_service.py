@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from backend.database.models import RegionModel, UavFlightModel
 from backend.dto import UavFlightCreateDTO
 from backend.repositories.uav_repository import region_repo, uav_flight_repo
-from backend.schemas.uav_schema import DateBoundsResponse
+from backend.schemas.uav_schema import DateBoundsQuery, DateBoundsResponse
 from backend.services.exceptions import RegionCreateError, UavFlightCreateError
 
 logger = logging.getLogger(__name__)
@@ -90,21 +90,21 @@ async def get_uav_date_bounds(db_session: AsyncSession):
 async def get_uav_flights_between_dates(
     db_session: AsyncSession,
     *,
-    bounds: DateBoundsResponse,
-    limit: int | None = None,
+    query: DateBoundsQuery,
 ):
     try:
-        if bounds.min_date is None or bounds.max_date is None:
+        if not query.min_date or not query.max_date:
             raise ValueError('Date bounds for search are not set')
         min_db, max_db = await uav_flight_repo.get_date_bounds(db_session)
         if min_db is None or max_db is None:
             raise ValueError('Date bounds for search are not set')
-        min_user = isoparse(bounds.min_date)
-        max_user = isoparse(bounds.max_date)
+        min_user = isoparse(query.min_date)
+        max_user = isoparse(query.max_date)
         if min_user < min_db or max_user > max_db:
             raise ValueError(
-                f'Search bounds ({bounds.min_date} - {bounds.max_date}) are outside the allowed range ({min_db} - {max_db})'
+                f'Search bounds ({query.min_date} - {query.max_date}) are outside the allowed range ({min_db} - {max_db})'
             )
+        limit = query.limit
         if limit is not None and limit <= 0:
             raise ValueError('Limit must be greater than zero')
         flights = await uav_flight_repo.get_flights_between_dates(

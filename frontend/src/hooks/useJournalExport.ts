@@ -25,6 +25,7 @@ export function useJournalExport(apiBase: string = API_BASE_URL) {
       setIsLoadingLimits(true)
       try {
         const response = await fetch(`${apiBase}/date-bounds`, {
+          method: 'POST',
           credentials: 'include',
         })
         if (!response.ok) {
@@ -90,7 +91,7 @@ export function useJournalExport(apiBase: string = API_BASE_URL) {
         max_date: new Date(toDate).toISOString(),
       })
 
-      const response = await fetch(`${apiBase}/date-bounds/query?${params.toString()}`, {
+      const response = await fetch(`${apiBase}/journal-json?${params.toString()}`, {
         credentials: 'include',
       })
 

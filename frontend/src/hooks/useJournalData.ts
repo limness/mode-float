@@ -22,7 +22,7 @@ interface UseJournalDataResult {
 }
 
 const API_BASE_URL = (import.meta.env.VITE_API_UAV_URL ?? '/api/v1/uav').replace(/\/$/, '')
-const JOURNAL_ENDPOINT = `${API_BASE_URL}/date-bounds/query`
+const JOURNAL_ENDPOINT = `${API_BASE_URL}/journal-json`
 const LIMITS_ENDPOINT = `${API_BASE_URL}/date-bounds`
 
 function formatDateTime(value: unknown): { date: string; time: string } {
@@ -102,7 +102,10 @@ export function useJournalData(limit = 30): UseJournalDataResult {
     setIsLoading(true)
     try {
       setNotice(null)
-      const limitsResponse = await fetch(LIMITS_ENDPOINT, { credentials: 'include' })
+      const limitsResponse = await fetch(LIMITS_ENDPOINT, {
+        method: 'POST',
+        credentials: 'include',
+      })
       if (!limitsResponse.ok) {
         throw new Error('Не удалось получить доступный период')
       }
