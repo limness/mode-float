@@ -55,6 +55,7 @@ build_one () {
     --template="$TEMPLATE" \
     --pdf-engine=xelatex \
     --lua-filter="$MERMAID_LUA" \
+    --listings \
     --quiet \
     -o "$pdf" "$md"
 

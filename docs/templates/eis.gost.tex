@@ -142,6 +142,25 @@
 \definecolor{shadecolor}{RGB}{248,248,248}
 \newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
 
+\newenvironment{Highlighting}{}{}
+% --- кириллица для моноширинного шрифта (polyglossia) ---
+\IfFontExistsTF{TeX Gyre Cursor}{
+  \newfontfamily\cyrillicfonttt{TeX Gyre Cursor}
+}{
+  \IfFontExistsTF{DejaVu Sans Mono}{
+    \newfontfamily\cyrillicfonttt{DejaVu Sans Mono}
+  }{
+    \IfFontExistsTF{Liberation Mono}{
+      \newfontfamily\cyrillicfonttt{Liberation Mono}
+    }{
+      % крайний фолбэк: может не покрыть кириллицу на macOS
+      \newfontfamily\cyrillicfonttt{Courier New}
+    }
+  }
+}
+\IfFontExistsTF{TeX Gyre Termes}{\newfontfamily\cyrillicfont{TeX Gyre Termes}}{}
+\IfFontExistsTF{TeX Gyre Heros}{\newfontfamily\cyrillicfontsf{TeX Gyre Heros}}{}
+
 
 \begin{document}
 
