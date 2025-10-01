@@ -11,7 +11,12 @@ const navItems = [
   { label: 'Журнал', to: '/journal', icon: PiNotebookBold, groups: ['admin'] },
 ]
 
-export function Sidebar() {
+interface SidebarProps {
+  isOpen: boolean
+  onClose: () => void
+}
+
+export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const { hasGroup, isLoading } = useAuth()
 
   if (isLoading) {
@@ -21,7 +26,7 @@ export function Sidebar() {
   const allowedItems = navItems.filter((item) => hasGroup(item.groups))
 
   return (
-    <aside className="sidebar">
+    <aside className={classNames('sidebar', isOpen && 'sidebar--open')}>
       <nav className="sidebar__menu">
         {allowedItems.map(({ label, to, icon: Icon }) => (
           <NavLink
@@ -30,6 +35,7 @@ export function Sidebar() {
             className={({ isActive }) =>
               classNames('sidebar__item', isActive && 'sidebar__item--active')
             }
+            onClick={onClose}
           >
             <Icon />
             <span>{label}</span>
