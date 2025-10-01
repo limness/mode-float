@@ -2,13 +2,17 @@
 name = "float-mode"
 version = "0.1.0"
 description = "Event management bot"
-authors = ["andrejcyrkunov <a.tsyrkunov@float-mode.com>", "DenisIndenbom <denis.indenbom@yandex.ru>"]
+authors = [
+    "andrejcyrkunov <a.tsyrkunov@float-mode.com>",
+    "D1ffic00lt <dm.filinov@gmail.com>",
+    "yalpcode <sanyaa1aaa@yandex.ru>",
+    "pur0ta <pur0ta@yandex.com>"
+]
 readme = "README.md"
 package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.12"
-aiogram = "^3.21.0"
 sqlalchemy = "^2.0.39"
 alembic = "^1.15.1"
 asyncpg = "^0.30.0"

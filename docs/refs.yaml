@@ -1,0 +1,24 @@
+project_title: &project "Fly Potato"
+version: "0.1"
+org_executor: "«Fly Potato Team»"
+team_list: &team_list
+  - name: "Д.А. Филинов"
+    role: "Аналитик"
+  - name: "А.С. Цыркунов"
+    role: "Бэкенд Разработчик"
+  - name: "А.Д. Ергучев"
+    role: "Бэкенд Разработчик"
+  - name: "А.А. Цембер"
+    role: "Фронтенд Разработчик"
+
+team_names_one: &team_names_one [ "«Fly Potato Team»" ]
+
+date: "2025-09-30"
+doc_code_prefix: "UAVD"
+org_customer: "ДПиИРГМ и ФЦБАС"
+author: *team_list
+admin_manual_subtitle: *project
+admin_manual_author: *team_names_one
+pmi_author: *team_names_one
+test_report_author: *team_names_one
+user_manual_author: *team_names_one
