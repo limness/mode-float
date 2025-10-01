@@ -540,6 +540,13 @@
   font-size: 13px;
 }
 
+.auth-card__notice {
+  margin: 0;
+  text-align: center;
+  font-size: 13px;
+  color: #ff8484;
+}
+
 .auth-form {
   display: flex;
   flex-direction: column;
