@@ -139,7 +139,7 @@ make all-prod
 создания каталога Вы можете посмотреть на [этой](https://console.yandex.cloud/cloud) странице. 
 
 ### 1. Создание Воркбука
-* Скачайте [файл](https://github.com/limness/flight-potato-dashboard.json) дашборда
+* Скачайте [файл](https://github.com/limness/flight-potato-workbook.json) воркбука
 * Зайдите на [страницу](https://datalens.ru/collections) с Воркбуками
 * В правом верхнем углу нажмите кнопку `Создать`
 * Импортируйте ранее скаченный файл
