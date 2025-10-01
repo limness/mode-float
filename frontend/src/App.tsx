@@ -14,8 +14,8 @@ const normalizeEmbedId = (value: string | undefined) => {
 
 const DATALENS_IDS: Record<string, string | undefined> = {
   overview: normalizeEmbedId(import.meta.env.VITE_DATALENS_OVERVIEW_ID) ?? 'qu4h5tflyj82b',
-  regions: normalizeEmbedId(import.meta.env.VITE_DATALENS_REGIONS_ID),
-  time: normalizeEmbedId(import.meta.env.VITE_DATALENS_TIME_ID),
+  regions: normalizeEmbedId(import.meta.env.VITE_DATALENS_REGIONS_ID) ?? 'w2ih53uscykah',
+  time: normalizeEmbedId(import.meta.env.VITE_DATALENS_TIME_ID) ?? '6csrckp9k2tir',
 }
 
 const DEFAULT_EMBED_TTL = 600
