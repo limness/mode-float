@@ -41,14 +41,14 @@ class BaseRepository(Generic[T]):
             return None
         return result.scalars().one()
 
-    async def create_many(self, db_session: AsyncSession, rows: list[Any]) -> set:
+    async def create_many(self, db_session: AsyncSession, rows: list[Any]) -> list[tuple]:
         """
         Create and persist a new instance of the model with the provided data.
         """
         pk_cols = list(self.__model__.__table__.primary_key.columns)
         stmt = insert(self.__model__).values(rows).on_conflict_do_nothing().returning(*pk_cols)
         result = await db_session.execute(stmt)
-        return [tuple(row[c.key] for c in pk_cols) for row in result]
+        return [tuple(m[c.key] for c in pk_cols) for m in result.mappings()]
 
     async def delete(self, db_session: AsyncSession, **filters: Any) -> None:
         """
