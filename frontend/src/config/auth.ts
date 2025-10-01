@@ -1,44 +1,48 @@
-const RAW_KEYCLOAK_LOGIN_URL = import.meta.env.VITE_KEYCLOAK_LOGIN_URL?.trim()
+const KEYCLOAK_LOGIN_URL = import.meta.env.VITE_KEYCLOAK_LOGIN_URL?.trim()
 
-function resolveKeycloakLoginUrl(): string | null {
-  if (!RAW_KEYCLOAK_LOGIN_URL) {
-    console.warn('[auth] VITE_KEYCLOAK_LOGIN_URL is not defined. Keycloak redirect is disabled.')
-    return null
+function isValidUrl(url: string): boolean {
+  try {
+    // new URL throws if URL is malformed
+    void new URL(url)
+    return true
+  } catch (error) {
+    console.error('[auth] Invalid VITE_KEYCLOAK_LOGIN_URL:', error)
+    return false
   }
+}
 
-  if (!/^https?:\/\//i.test(RAW_KEYCLOAK_LOGIN_URL)) {
-    console.error('[auth] VITE_KEYCLOAK_LOGIN_URL must be an absolute URL (http/https).')
-    return null
+function isLoopback(url: string): boolean {
+  if (typeof window === 'undefined') {
+    return false
   }
 
   try {
-    if (typeof window !== 'undefined') {
-      const parsed = new URL(RAW_KEYCLOAK_LOGIN_URL)
-      if (
-        parsed.origin === window.location.origin &&
-        parsed.pathname.replace(/\/?$/, '') === window.location.pathname.replace(/\/?$/, '')
-      ) {
-        console.error('[auth] VITE_KEYCLOAK_LOGIN_URL points to the current page and would cause a redirect loop.')
-        return null
-      }
-    }
+    const target = new URL(url)
+    const current = window.location
+    return (
+      target.origin === current.origin &&
+      target.pathname.replace(/\/$/, '') === current.pathname.replace(/\/$/, '')
+    )
   } catch (error) {
-    console.error('[auth] Failed to parse VITE_KEYCLOAK_LOGIN_URL:', error)
-    return null
+    console.error('[auth] Failed to inspect VITE_KEYCLOAK_LOGIN_URL:', error)
+    return false
   }
-
-  return RAW_KEYCLOAK_LOGIN_URL
-}
-
-const KEYCLOAK_LOGIN_URL = resolveKeycloakLoginUrl()
-
-export function getKeycloakLoginUrl() {
-  return KEYCLOAK_LOGIN_URL
 }
 
 export function redirectToKeycloakLogin() {
   if (!KEYCLOAK_LOGIN_URL) {
+    console.error('[auth] VITE_KEYCLOAK_LOGIN_URL is not set. Keycloak redirect cancelled.')
     return
   }
+
+  if (!isValidUrl(KEYCLOAK_LOGIN_URL)) {
+    return
+  }
+
+  if (isLoopback(KEYCLOAK_LOGIN_URL)) {
+    console.error('[auth] VITE_KEYCLOAK_LOGIN_URL points to the current page. Redirect aborted to avoid loop.')
+    return
+  }
+
   window.location.href = KEYCLOAK_LOGIN_URL
 }

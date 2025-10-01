@@ -1,15 +1,6 @@
-import { getKeycloakLoginUrl, redirectToKeycloakLogin } from '../config/auth'
+import { redirectToKeycloakLogin } from '../config/auth'
 
 export function LoginPage() {
-  const isConfigured = Boolean(getKeycloakLoginUrl())
-
-  const handleLogin = () => {
-    if (!isConfigured) {
-      return
-    }
-    redirectToKeycloakLogin()
-  }
-
   return (
     <div className="auth-page">
       <div className="auth-card">
@@ -19,15 +10,10 @@ export function LoginPage() {
         <p className="auth-card__subtitle">Авторизация проходит через корпоративный Keycloak.</p>
 
         <div className="auth-form auth-form--actions">
-          <button className="auth-submit" type="button" onClick={handleLogin} disabled={!isConfigured}>
+          <button className="auth-submit" type="button" onClick={redirectToKeycloakLogin}>
             Продолжить
           </button>
         </div>
-        {!isConfigured && (
-          <p className="auth-card__notice" role="alert">
-            URL Keycloak не настроен. Обратитесь к администратору системы.
-          </p>
-        )}
         <p className="auth-card__footer">Используйте корпоративный аккаунт или провайдеры, подключённые в Keycloak (например, Google).</p>
       </div>
     </div>
