@@ -1,4 +1,4 @@
-<h1 align="center">Flight Potato</h1>
+<h1 align="center">Fly Potato</h1>
 <div align="center">
 	<img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/limness/mode-float">
 	<img alt="GitHub code size" src="https://img.shields.io/github/languages/code-size/limness/mode-float">
