@@ -115,19 +115,22 @@ export function useJournalData(limit = 30): UseJournalDataResult {
       const windowMs = 7 * 24 * 60 * 60 * 1000
       const candidateFrom = new Date(max.getTime() - windowMs)
       const from = minBound && candidateFrom < minBound ? minBound : candidateFrom
-      const body = {
+      const params = new URLSearchParams({
         min_date: from.toISOString(),
         max_date: max.toISOString(),
-        limit,
-      }
-      const response = await fetch(JOURNAL_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      })
+      const response = await fetch(`${JOURNAL_ENDPOINT}?${params.toString()}`, {
         credentials: 'include',
-        body: JSON.stringify(body),
       })
       if (!response.ok) {
         throw new Error('Не удалось загрузить последние полёты')
+      }
+      if (response.redirected) {
+        throw new Error('Сессия истекла. Обновите страницу и войдите снова.')
+      }
+      const contentType = response.headers.get('content-type') ?? ''
+      if (!contentType.includes('application/json')) {
+        throw new Error('Получен некорректный ответ сервера журнала')
       }
       const payload = (await response.json()) as RawFlight
       let items: RawFlight[] = []
@@ -143,9 +146,15 @@ export function useJournalData(limit = 30): UseJournalDataResult {
       setNotice(items.length ? null : "За выбранный период нет данных")
     } catch (err) {
       console.error('[journal] failed to fetch data', err)
-      setNotice('Показаны демонстрационные данные: нет подключения к базе данных')
-      setError(null)
-      setRaw([])
+      const message = err instanceof Error ? err.message : 'Не удалось загрузить журнал'
+      if (message.includes('Сессия истекла')) {
+        setNotice(message)
+        setRaw([])
+      } else {
+        setNotice('Показаны демонстрационные данные: нет подключения к базе данных')
+        setRaw([])
+      }
+      setError(message)
     } finally {
       setIsLoading(false)
     }
