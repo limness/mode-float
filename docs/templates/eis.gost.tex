@@ -136,6 +136,13 @@
 \renewcommand{\contentsname}{Содержание}
 \renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
 
+\providecommand{\pandocbounded}[1]{#1}
+\usepackage{color}
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+
+
 \begin{document}
 
 \maketitle
