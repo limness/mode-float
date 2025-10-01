@@ -109,7 +109,6 @@ export function useJournalExport(apiBase: string = API_BASE_URL) {
         throw new Error('Сессия истекла. Войдите снова, чтобы экспортировать журнал.')
       }
 
-      const contentType = response.headers.get('content-type') ?? ''
       const payloadText = await response.text()
       const trimmed = payloadText.trim()
       if (!trimmed) {
