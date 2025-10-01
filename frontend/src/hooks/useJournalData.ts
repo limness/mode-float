@@ -115,12 +115,16 @@ export function useJournalData(limit = 30): UseJournalDataResult {
       const windowMs = 7 * 24 * 60 * 60 * 1000
       const candidateFrom = new Date(max.getTime() - windowMs)
       const from = minBound && candidateFrom < minBound ? minBound : candidateFrom
-      const params = new URLSearchParams({
+      const body = {
         min_date: from.toISOString(),
         max_date: max.toISOString(),
-      })
-      const response = await fetch(`${JOURNAL_ENDPOINT}?${params.toString()}`, {
+        limit,
+      }
+      const response = await fetch(JOURNAL_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
+        body: JSON.stringify(body),
       })
       if (!response.ok) {
         throw new Error('Не удалось загрузить последние полёты')
@@ -129,10 +133,20 @@ export function useJournalData(limit = 30): UseJournalDataResult {
         throw new Error('Сессия истекла. Обновите страницу и войдите снова.')
       }
       const contentType = response.headers.get('content-type') ?? ''
-      if (!contentType.includes('application/json')) {
-        throw new Error('Получен некорректный ответ сервера журнала')
+      let payload: RawFlight
+      if (contentType.includes('application/json')) {
+        payload = (await response.json()) as RawFlight
+      } else {
+        const text = await response.text()
+        if (text.trim().startsWith('<')) {
+          throw new Error('Сессия истекла. Обновите страницу и войдите снова.')
+        }
+        try {
+          payload = JSON.parse(text) as RawFlight
+        } catch (error) {
+          throw new Error('Получен некорректный ответ сервера журнала')
+        }
       }
-      const payload = (await response.json()) as RawFlight
       let items: RawFlight[] = []
       if (Array.isArray(payload)) {
         items = payload
