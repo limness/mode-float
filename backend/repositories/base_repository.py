@@ -57,6 +57,7 @@ class BaseRepository(Generic[T]):
                 result = await db_session.execute(statement)
                 await db_session.flush()
                 saved_rows.add(result)
+                await nested_session.commit()
             except IntegrityError as ex:
                 if not isinstance(ex.orig, UniqueViolationError):
                     raise ex
