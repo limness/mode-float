@@ -180,6 +180,7 @@ async def process_xlsx_file(
                     await create_uav_flight(
                         db_session,
                         file_id=file_id,
+                        flight_id=getattr(parsed, 'flight_id', None),
                         uav_type=getattr(parsed, 'uav_type', None),
                         takeoff_point=getattr(parsed, 'takeoff_point', None),
                         landing_point=getattr(parsed, 'landing_point', None),

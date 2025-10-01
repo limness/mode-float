@@ -54,6 +54,7 @@ async def create_uav_flight(
     db_session: AsyncSession,
     *,
     file_id: str | None = None,
+    flight_id: str | None = None,
     uav_type: str | None = None,
     takeoff_point=None,
     landing_point=None,
@@ -113,6 +114,7 @@ async def create_uav_flight(
         flight = await uav_flight_repo.create_one(
             db_session,
             file_id=file_id,
+            flight_id=flight_id,
             uav_type=uav_type,
             takeoff_point=takeoff_point,
             landing_point=landing_point,
