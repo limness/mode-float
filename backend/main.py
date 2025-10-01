@@ -52,7 +52,10 @@ def _configure_middlewares(app: FastAPI):
             'Authorization',
         ],
     )
-    app.add_middleware(JWTMiddleware, exclude_paths=['/docs', '/openapi.json', '/health', '/api/v1/regions/upload-shapefile'])
+    app.add_middleware(
+        JWTMiddleware,
+        exclude_paths=['/docs', '/openapi.json', '/health', '/api/v1/regions/upload-shapefile'],
+    )
 
 
 def create_app() -> FastAPI:
