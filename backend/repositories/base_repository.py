@@ -1,11 +1,10 @@
 import logging
 from typing import Any, Generic, List, Optional, TypeVar
 
-from asyncpg.exceptions import UniqueViolationError
-from sqlalchemy import delete, insert, select, update
+from sqlalchemy import delete, select, update
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
-
 from backend.database.base import Base
 
 logger = logging.getLogger(__name__)
@@ -36,35 +35,20 @@ class BaseRepository(Generic[T]):
         try:
             result = await db_session.execute(statement)
             await db_session.flush()
-        except IntegrityError as ex:
-            if not isinstance(ex.orig, UniqueViolationError):
-                raise ex
+        except IntegrityError:
             await db_session.rollback()
             logger.error(f'Failed to insert {self.__model__} due to duplicate key value!')
             return None
-        # return self.get_one(db_session=db_session, **dict(result.inserted_primary_key))
         return result.scalars().one()
 
     async def create_many(self, db_session: AsyncSession, rows: list[Any]) -> set:
         """
         Create and persist a new instance of the model with the provided data.
         """
-        saved_rows = set()
-        for row in rows:
-            nested_session = await db_session.begin_nested()
-            statement = insert(self.__model__).values(row)
-            try:
-                result = await db_session.execute(statement)
-                await db_session.flush()
-                saved_rows.add(result)
-            except IntegrityError as ex:
-                if not isinstance(ex.orig, UniqueViolationError):
-                    raise ex
-                await nested_session.rollback()
-                logger.error(f'Failed to insert {self.__model__} due to duplicate key value!')
-            else:
-                await nested_session.commit()
-        return saved_rows
+        pk_cols = list(self.__model__.__table__.primary_key.columns)
+        stmt = insert(self.__model__).values(rows).on_conflict_do_nothing().returning(*pk_cols)
+        result = await db_session.execute(stmt)
+        return [tuple(row[c.key] for c in pk_cols) for row in result]
 
     async def delete(self, db_session: AsyncSession, **filters: Any) -> None:
         """
