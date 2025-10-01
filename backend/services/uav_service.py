@@ -87,7 +87,12 @@ async def get_uav_date_bounds(db_session: AsyncSession):
         raise UavFlightCreateError(f'Failed to get date bounds: {exc}') from exc
 
 
-async def get_uav_flights_between_dates(db_session: AsyncSession, *, bounds: DateBoundsResponse):
+async def get_uav_flights_between_dates(
+    db_session: AsyncSession,
+    *,
+    bounds: DateBoundsResponse,
+    limit: int | None = None,
+):
     try:
         if bounds.min_date is None or bounds.max_date is None:
             raise ValueError('Date bounds for search are not set')
@@ -100,7 +105,14 @@ async def get_uav_flights_between_dates(db_session: AsyncSession, *, bounds: Dat
             raise ValueError(
                 f'Search bounds ({bounds.min_date} - {bounds.max_date}) are outside the allowed range ({min_db} - {max_db})'
             )
-        flights = await uav_flight_repo.get_flights_between_dates(db_session, bounds)
+        if limit is not None and limit <= 0:
+            raise ValueError('Limit must be greater than zero')
+        flights = await uav_flight_repo.get_flights_between_dates(
+            db_session,
+            start=min_user,
+            end=max_user,
+            limit=limit,
+        )
         return [flight.__dict__ for flight in flights]
     except SQLAlchemyError as exc:
         raise UavFlightCreateError(f'Failed to get flights between dates: {exc}') from exc

@@ -85,16 +85,13 @@ export function useJournalExport(apiBase: string = API_BASE_URL) {
       setIsExporting(true)
       setError(null)
 
-      const payload = {
+      const params = new URLSearchParams({
         min_date: new Date(fromDate).toISOString(),
         max_date: new Date(toDate).toISOString(),
-      }
+      })
 
-      const response = await fetch(`${apiBase}/date-bounds/query`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch(`${apiBase}/date-bounds/query?${params.toString()}`, {
         credentials: 'include',
-        body: JSON.stringify(payload),
       })
 
       if (!response.ok) {
@@ -113,19 +110,20 @@ export function useJournalExport(apiBase: string = API_BASE_URL) {
       }
 
       const contentType = response.headers.get('content-type') ?? ''
+      const payloadText = await response.text()
+      const trimmed = payloadText.trim()
+      if (!trimmed) {
+        throw new Error('Сервер вернул пустой ответ')
+      }
+      if (trimmed.startsWith('<')) {
+        throw new Error('Сессия истекла. Войдите снова, чтобы экспортировать журнал.')
+      }
+
       let jsonPayload: unknown
-      if (contentType.includes('application/json')) {
-        jsonPayload = await response.json()
-      } else {
-        const text = await response.text()
-        if (text.trim().startsWith('<')) {
-          throw new Error('Сессия истекла. Войдите снова, чтобы экспортировать журнал.')
-        }
-        try {
-          jsonPayload = JSON.parse(text)
-        } catch (error) {
-          throw new Error(text || 'Получен некорректный ответ сервера')
-        }
+      try {
+        jsonPayload = JSON.parse(trimmed)
+      } catch (error) {
+        throw new Error('Получен некорректный ответ сервера')
       }
 
       const blob = new Blob([JSON.stringify(jsonPayload, null, 2)], {

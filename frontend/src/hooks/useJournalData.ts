@@ -115,16 +115,15 @@ export function useJournalData(limit = 30): UseJournalDataResult {
       const windowMs = 7 * 24 * 60 * 60 * 1000
       const candidateFrom = new Date(max.getTime() - windowMs)
       const from = minBound && candidateFrom < minBound ? minBound : candidateFrom
-      const body = {
+      const params = new URLSearchParams({
         min_date: from.toISOString(),
         max_date: max.toISOString(),
-        limit,
+      })
+      if (limit) {
+        params.set('limit', String(limit))
       }
-      const response = await fetch(JOURNAL_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch(`${JOURNAL_ENDPOINT}?${params.toString()}`, {
         credentials: 'include',
-        body: JSON.stringify(body),
       })
       if (!response.ok) {
         throw new Error('Не удалось загрузить последние полёты')
@@ -132,20 +131,15 @@ export function useJournalData(limit = 30): UseJournalDataResult {
       if (response.redirected) {
         throw new Error('Сессия истекла. Обновите страницу и войдите снова.')
       }
-      const contentType = response.headers.get('content-type') ?? ''
+      const payloadText = await response.text()
+      if (payloadText.trim().startsWith('<')) {
+        throw new Error('Сессия истекла. Обновите страницу и войдите снова.')
+      }
       let payload: RawFlight
-      if (contentType.includes('application/json')) {
-        payload = (await response.json()) as RawFlight
-      } else {
-        const text = await response.text()
-        if (text.trim().startsWith('<')) {
-          throw new Error('Сессия истекла. Обновите страницу и войдите снова.')
-        }
-        try {
-          payload = JSON.parse(text) as RawFlight
-        } catch (error) {
-          throw new Error('Получен некорректный ответ сервера журнала')
-        }
+      try {
+        payload = JSON.parse(payloadText) as RawFlight
+      } catch (error) {
+        throw new Error('Получен некорректный ответ сервера журнала')
       }
       let items: RawFlight[] = []
       if (Array.isArray(payload)) {

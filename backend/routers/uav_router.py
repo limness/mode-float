@@ -8,6 +8,7 @@ from fastapi import (
     Depends,
     File,
     Form,
+    Query,
     UploadFile,
     status,
 )
@@ -216,7 +217,9 @@ async def get_date_bounds(db_session: AsyncSession = Depends(get_database)) -> D
 
 @router.get('/date-bounds/query', status_code=status.HTTP_200_OK)
 async def get_flights_between_dates(
-    bounds: DateBoundsResponse,
+    min_date: str = Query(..., description='Начальная дата диапазона в формате ISO 8601'),
+    max_date: str = Query(..., description='Конечная дата диапазона в формате ISO 8601'),
+    limit: int | None = Query(None, ge=1, le=1000, description='Максимальное количество записей'),
     db_session: AsyncSession = Depends(get_database),
 ) -> list[dict]:
     """Получить полёты БВС в заданном диапазоне дат.
@@ -228,7 +231,8 @@ async def get_flights_between_dates(
     - 404: ошибка при запросе
     """
     try:
-        flights = await get_uav_flights_between_dates(db_session, bounds=bounds)
+        bounds = DateBoundsResponse(min_date=min_date, max_date=max_date)
+        flights = await get_uav_flights_between_dates(db_session, bounds=bounds, limit=limit)
         return flights
     except Exception as exc:
         raise IDException(
