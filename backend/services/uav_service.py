@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from backend.database.models import RegionModel, UavFlightModel
 from backend.dto import UavFlightCreateDTO
 from backend.repositories.uav_repository import region_repo, uav_flight_repo
-from backend.schemas.uav_schema import DateBoundsQuery, DateBoundsResponse
+from backend.schemas.uav_schema import DateBoundsQuery
 from backend.services.exceptions import RegionCreateError, UavFlightCreateError
 
 logger = logging.getLogger(__name__)
@@ -113,6 +113,22 @@ async def get_uav_flights_between_dates(
             end=max_user,
             limit=limit,
         )
-        return [flight.__dict__ for flight in flights]
+
+        result = [
+            {
+                column.name: (
+                    getattr(flight, column.name).isoformat()
+                    if hasattr(getattr(flight, column.name), 'isoformat')
+                    else getattr(flight, column.name)
+                )
+                for column in flight.__table__.columns
+                if not (
+                    hasattr(getattr(flight, column.name), '__dict__')
+                    and not isinstance(getattr(flight, column.name), (str, int, float, bool))
+                )
+            }
+            for flight in flights
+        ]
+        return result
     except SQLAlchemyError as exc:
         raise UavFlightCreateError(f'Failed to get flights between dates: {exc}') from exc

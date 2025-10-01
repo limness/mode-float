@@ -20,7 +20,7 @@ from backend.database.base import get_database
 from backend.dto import UavFlightCreateDTO
 from backend.exc import IDException
 from backend.schemas.file_schema import FileUploadResponseSchema
-from backend.schemas.uav_schema import DateBoundsQuery, DateBoundsResponse
+from backend.schemas.uav_schema import DateBoundsQuery, DateBoundsResponse, UavFlightsResponse
 from backend.services.exceptions import (
     FileCreateError,
     FileDeactivateError,
@@ -200,7 +200,7 @@ async def get_date_bounds(db_session: AsyncSession = Depends(get_database)) -> D
     Возвращает ISO-строки дат (или `null`, если данных нет).
 
     - 200: границы дат получены
-    - 404: ошибка вычисления границ
+    - 500: ошибка вычисления границ
     """
     try:
         min_date, max_date = await get_uav_date_bounds(db_session)
@@ -210,7 +210,7 @@ async def get_date_bounds(db_session: AsyncSession = Depends(get_database)) -> D
         )
     except Exception as exc:
         raise IDException(
-            status_code=status.HTTP_404_NOT_FOUND,
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=str(exc),
         )
 
@@ -221,12 +221,12 @@ async def get_flights_between_dates(
     max_date: str = Query(..., description='Конечная дата диапазона в ISO 8601'),
     limit: int | None = Query(None, ge=1, le=1000, description='Максимальное количество записей'),
     db_session: AsyncSession = Depends(get_database),
-) -> list[dict]:
+) -> UavFlightsResponse:
     """Получить полёты БВС в заданном диапазоне дат."""
     try:
         query = DateBoundsQuery(min_date=min_date, max_date=max_date, limit=limit)
         flights = await get_uav_flights_between_dates(db_session, query=query)
-        return flights
+        return UavFlightsResponse(flights=flights)
     except ValueError as exc:
         raise IDException(
             status_code=status.HTTP_400_BAD_REQUEST,

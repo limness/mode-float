@@ -26,7 +26,7 @@ async def upload_shapefile(
 
     - 201: файлы успешно обработаны и регионы сохранены
     - 400: переданы файлы неверного формата
-    - 404: ошибка чтения/парсинга или сохранения
+    - 500: ошибка чтения/парсинга или сохранения
     """
     if not (shp.filename.lower().endswith('.shp') and dbf.filename.lower().endswith('.dbf')):
         raise IDException(
@@ -44,6 +44,6 @@ async def upload_shapefile(
         return {'status': 'ok', 'regions': list(region_polygons.keys())}
     except Exception as exc:
         raise IDException(
-            status_code=status.HTTP_404_NOT_FOUND,
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=str(exc),
         )

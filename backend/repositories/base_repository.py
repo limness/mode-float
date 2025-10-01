@@ -5,6 +5,7 @@ from sqlalchemy import delete, select, update
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from backend.database.base import Base
 
 logger = logging.getLogger(__name__)

@@ -10,3 +10,7 @@ class DateBoundsQuery(BaseModel):
 class DateBoundsResponse(BaseModel):
     min_date: str | None
     max_date: str | None
+
+
+class UavFlightsResponse(BaseModel):
+    flights: list[dict] | None
