@@ -15,6 +15,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.database.base import get_database
+from backend.core.settings import application_settings
 from backend.exc import IDException
 from backend.schemas.file_schema import FileUploadResponseSchema
 from backend.schemas.uav_schema import DateBoundsResponse
@@ -32,9 +33,9 @@ from backend.services.file_service import (
 from backend.services.parse_service.geocoder import DefaultGeocoder
 from backend.services.parse_service.loader import ExcelLoader
 from backend.services.parse_service.mapper import DefaultMapper
-from backend.services.parse_service.mapper import UavFlightModel as ParsedUavFlight
+from backend.dto import UavFlightCreateDTO
 from backend.services.uav_service import (
-    create_uav_flight,
+    create_uav_flights,
     get_uav_date_bounds,
     get_uav_flights_between_dates,
 )
@@ -112,11 +113,7 @@ async def upload_xlsx_file(
         )
 
     try:
-        await process_xlsx_file(
-            db_session=db_session,
-            file_io=file_io,
-            file_id=str(file_rec.file_id),
-        )
+        await process_xlsx_file(db_session=db_session, file_io=file_io)
         await update_file_status(
             db_session,
             file_id=str(file_rec.file_id),
@@ -156,7 +153,6 @@ async def upload_xlsx_file(
 async def process_xlsx_file(
     db_session: AsyncSession,
     file_io: io.BytesIO,
-    file_id: str,
 ) -> None:
     """Парсинг Excel-файла и сохранение полётов в БД.
 
@@ -164,9 +160,6 @@ async def process_xlsx_file(
     записи, связанной с `file_id`. Исключения пробрасываются наверх для
     корректной обработки в вызывающем хэндлере.
     """
-    import logging
-
-    logger = logging.getLogger(__name__)
     try:
         with pd.ExcelFile(file_io) as excel_file:
             for sheet_name in excel_file.sheet_names:
@@ -177,35 +170,19 @@ async def process_xlsx_file(
                 if df.empty:
                     continue
 
+                uav_flights_batch: list[dict] = []
                 for _, row in df.iterrows():
-                    parsed: ParsedUavFlight = mapper.map_row(row)
-                    logger.info('mapped %s / %s', _, df.shape)
+                    uav_flight: UavFlightCreateDTO = mapper.map_row(row)
+                    uav_flights_batch.append(uav_flight.model_dump())
 
-                    await create_uav_flight(
-                        db_session,
-                        file_id=file_id,
-                        flight_id=getattr(parsed, 'flight_id', None),
-                        uav_type=getattr(parsed, 'uav_type', None),
-                        takeoff_point=getattr(parsed, 'takeoff_point', None),
-                        landing_point=getattr(parsed, 'landing_point', None),
-                        coordinates=getattr(parsed, 'coordinates', None),
-                        takeoff_lat=getattr(parsed, 'takeoff_lat', None),
-                        takeoff_lon=getattr(parsed, 'takeoff_lon', None),
-                        landing_lat=getattr(parsed, 'landing_lat', None),
-                        landing_lon=getattr(parsed, 'landing_lon', None),
-                        latitude=getattr(parsed, 'latitude', None),
-                        longitude=getattr(parsed, 'longitude', None),
-                        takeoff_datetime=getattr(parsed, 'takeoff_datetime', None),
-                        landing_datetime=getattr(parsed, 'landing_datetime', None),
-                        date=getattr(parsed, 'date', None),
-                        duration_minutes=getattr(parsed, 'duration_minutes', None),
-                        city=getattr(parsed, 'city', None),
-                        major_region_id=getattr(parsed, 'major_region_id', None),
-                        takeoff_region_id=getattr(parsed, 'takeoff_region_id', None),
-                        landing_region_id=getattr(parsed, 'landing_region_id', None),
-                        distance_km=getattr(parsed, 'distance_km', None),
-                        average_speed_kmh=getattr(parsed, 'average_speed_kmh', None),
-                    )
+                    if len(uav_flights_batch) >= application_settings.APP_BATCH_PROCESSING:
+                        logger.info('Created uav model %s / %s', _, df.shape)
+                        await create_uav_flights(db_session, data=uav_flights_batch)
+                        uav_flights_batch = []
+
+                if uav_flights_batch:
+                    await create_uav_flights(db_session, data=uav_flights_batch)
+
     except ServiceError as exc:
         raise exc
     except Exception as exc:

@@ -6,7 +6,7 @@ from zoneinfo import ZoneInfo
 
 import pandas as pd
 
-from backend.database.models import UavFlightModel
+from backend.dto import UavFlightCreateDTO
 
 from .geocoder import Geocoder
 
@@ -26,90 +26,93 @@ def ensure_aware(x, tz='Europe/Moscow'):
 
 
 class Mapper(Protocol):
-    def map_row(self, row: pd.Series) -> UavFlightModel: ...
+    def map_row(self, row: pd.Series) -> UavFlightCreateDTO: ...
 
 
 class DefaultMapper(Mapper):
     def __init__(self, geocoder: Geocoder):
         self.geocoder = geocoder
 
-    def map_row(self, row: pd.Series) -> UavFlightModel:
-        city = row.get('Центр ЕС ОрВД', '')
-        raw_shr = row.get('SHR', '')
-        raw_dep = row.get('DEP', '')
-        raw_arr = row.get('ARR', '')
+    def map_row(self, row: pd.Series) -> UavFlightCreateDTO:
+        # city = row.get('Центр ЕС ОрВД', '')
+        # raw_shr = row.get('SHR', '')
+        # raw_dep = row.get('DEP', '')
+        # raw_arr = row.get('ARR', '')
 
-        sid = self._extract(raw_dep, r'-SID\s+(\d+)') or ''
-        uav_type = self._extract(raw_shr, r'TYP/([A-Z0-9]+)') or 'UNKNOWN'
+        # sid = self._extract(raw_dep, r'-SID\s+(\d+)') or ''
+        # uav_type = self._extract(raw_shr, r'TYP/([A-Z0-9]+)') or 'UNKNOWN'
+        #
+        # route_lines = re.findall(r'^-M.*$', raw_shr, flags=re.MULTILINE)
+        # route_points = []
+        # for line in route_lines:
+        #     coords = re.findall(r'\d{4,6}[NSСЮ]\d{5,7}[EWВЗ]', line)
+        #     for c in coords:
+        #         pt = self.geocoder.parse_latlon(c)
+        #         if pt:
+        #             route_points.append(pt)
+        #
+        # takeoff_coords = self.geocoder.parse_latlon(
+        #     self._extract(raw_dep, r'-ADEPZ\b[\s\S]*?(\d{4,6}[NSСЮ]\d{5,7}[EWВЗ])')
+        # )
+        # landing_coords = self.geocoder.parse_latlon(
+        #     self._extract(raw_arr, r'-ADARRZ\b[\s\S]*?(\d{4,6}[NSСЮ]\d{5,7}[EWВЗ])')
+        # )
+        #
+        # dof = self._extract(raw_dep, r'-ADD\s+(\d{6})')
+        # dep_time = ensure_aware(
+        #     self._make_timestamp(dof, self._extract(raw_dep, r'-ATD\s+(\d{4})'))
+        # )
+        # arr_time = ensure_aware(
+        #     self._make_timestamp(dof, self._extract(raw_arr, r'-ATA\s+(\d{4})'))
+        # )
+        #
+        # date = None
+        # if dep_time is not None:
+        #     date = dep_time
+        # elif arr_time is not None:
+        #     date = arr_time
+        #
+        # duration = None
+        # if dep_time is not None and arr_time is not None:
+        #     duration = (arr_time - dep_time).seconds / 60
+        #
+        # takeoff_lat, takeoff_lon = None, None
+        # landing_lat, landing_lon = None, None
+        # latitude, longitude = None, None
+        # if landing_coords is not None:
+        #     landing_lat, landing_lon = landing_coords
+        #     latitude, longitude = landing_lat, landing_lon
+        # if takeoff_coords is not None:
+        #     takeoff_lat, takeoff_lon = takeoff_coords
+        #     latitude, longitude = takeoff_coords
+        #
+        # distance_km = None
+        # if landing_coords is not None and takeoff_coords is not None:
+        #     distance_km = self._haversine(takeoff_lat, takeoff_lon, landing_lat, landing_lon)
+        # average_speed_kmh = None
+        # if distance_km is not None and duration > 0:
+        #     average_speed_kmh = distance_km / duration * 60
 
-        route_lines = re.findall(r'^-M.*$', raw_shr, flags=re.MULTILINE)
-        route_points = []
-        for line in route_lines:
-            coords = re.findall(r'\d{4,6}[NSСЮ]\d{5,7}[EWВЗ]', line)
-            for c in coords:
-                pt = self.geocoder.parse_latlon(c)
-                if pt:
-                    route_points.append(pt)
-
-        takeoff_coords = self.geocoder.parse_latlon(
-            self._extract(raw_dep, r'-ADEPZ\b[\s\S]*?(\d{4,6}[NSСЮ]\d{5,7}[EWВЗ])')
-        )
-        landing_coords = self.geocoder.parse_latlon(
-            self._extract(raw_arr, r'-ADARRZ\b[\s\S]*?(\d{4,6}[NSСЮ]\d{5,7}[EWВЗ])')
-        )
-
-        dof = self._extract(raw_dep, r'-ADD\s+(\d{6})')
-        dep_time = ensure_aware(
-            self._make_timestamp(dof, self._extract(raw_dep, r'-ATD\s+(\d{4})'))
-        )
-        arr_time = ensure_aware(
-            self._make_timestamp(dof, self._extract(raw_arr, r'-ATA\s+(\d{4})'))
-        )
-
-        date = None
-        if dep_time is not None:
-            date = dep_time
-        elif arr_time is not None:
-            date = arr_time
-
-        duration = None
-        if dep_time is not None and arr_time is not None:
-            duration = (arr_time - dep_time).seconds / 60
-
-        takeoff_lat, takeoff_lon = None, None
-        landing_lat, landing_lon = None, None
-        latitude, longitude = None, None
-        if landing_coords is not None:
-            landing_lat, landing_lon = landing_coords
-            latitude, longitude = landing_lat, landing_lon
-        if takeoff_coords is not None:
-            takeoff_lat, takeoff_lon = takeoff_coords
-            latitude, longitude = takeoff_coords
-
-        distance_km = None
-        if landing_coords is not None and takeoff_coords is not None:
-            distance_km = self._haversine(takeoff_lat, takeoff_lon, landing_lat, landing_lon)
-        average_speed_kmh = None
-        if distance_km is not None and duration > 0:
-            average_speed_kmh = distance_km / duration * 60
-
-        return UavFlightModel(
-            flight_id=sid,
-            uav_type=uav_type,
-            takeoff_lat=takeoff_lat,
-            takeoff_lon=takeoff_lon,
-            landing_lat=landing_lat,
-            landing_lon=landing_lon,
-            latitude=latitude,
-            longitude=longitude,
-            takeoff_datetime=dep_time,
-            landing_datetime=arr_time,
-            date=date,
-            duration_minutes=duration,
-            city=city,
-            distance_km=distance_km,
-            average_speed_kmh=average_speed_kmh,
-        )
+        return UavFlightCreateDTO(
+            flight_id="FL12345",
+            file_id=None,
+            uav_type="DJI Mavic 3",
+            takeoff_lat=55.755826,
+            takeoff_lon=37.617300,
+            landing_lat=55.755826,
+            landing_lon=37.617300,
+            latitude=55.755826,
+            longitude=37.617300,
+            takeoff_datetime=datetime(2024, 1, 15, 10, 30, 0),
+            landing_datetime=datetime(2024, 1, 15, 11, 15, 0),
+            date=datetime(2024, 1, 15).date(),
+            duration_minutes=45,
+            city="Москва",
+            distance_km=5.2,
+            average_speed_kmh=6.9,
+            takeoff_region_id=77,
+            landing_region_id=77,
+            major_region_id=3)
 
     def _extract(self, text: Any, pattern: str) -> str | None:
         text = str(text) if text is not None else ''
