@@ -50,7 +50,7 @@ export function JournalPage() {
     error: exportError,
     exportJournal,
   } = useJournalExport()
-  const { rows: latestRows, isLoading: isLoadingRows, error: rowsError, notice: rowsNotice } = useJournalData(30)
+  const { rows: latestRows, isLoading: isLoadingRows, error: rowsError, notice: rowsNotice } = useJournalData(20)
 
   const formatDisplayDate = (date: Date | null) => (date ? date.toLocaleDateString('ru-RU') : '—')
   const tableRows = (latestRows.length > 0 ? latestRows : fallbackRows).slice(0, 30)

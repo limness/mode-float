@@ -92,7 +92,7 @@ function buildRows(data: RawFlight[], limit: number): JournalRow[] {
   })
 }
 
-export function useJournalData(limit = 30): UseJournalDataResult {
+export function useJournalData(limit = 20): UseJournalDataResult {
   const [raw, setRaw] = useState<RawFlight[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
