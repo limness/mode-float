@@ -126,15 +126,25 @@ export function JournalPage() {
                   <tbody>
                     {tableRows.map((flight, index) => (
                       <tr key={`${flight.id}-${index}`}>
-                        <td className="table__cell-main">{flight.id}</td>
                         <td>
-                          <span className="table__cell-main">{flight.date}</span>
-                          <span className="table__cell-sub">{flight.time}</span>
+                          <span className="table__cell-primary">{flight.id}</span>
                         </td>
-                        <td className="table__cell-main">{flight.type}</td>
-                        <td className="table__cell-main">{flight.duration}</td>
-                        <td className="table__cell-main">{flight.takeoff}</td>
-                        <td className="table__cell-main">{flight.landing}</td>
+                        <td>
+                          <span className="table__cell-primary">{flight.date}</span>
+                          {flight.time && <span className="table__cell-sub">{flight.time}</span>}
+                        </td>
+                        <td>
+                          <span className="table__cell-primary">{flight.type}</span>
+                        </td>
+                        <td>
+                          <span className="table__cell-primary">{flight.duration}</span>
+                        </td>
+                        <td>
+                          <span className="table__cell-coordinate">{flight.takeoff}</span>
+                        </td>
+                        <td>
+                          <span className="table__cell-coordinate">{flight.landing}</span>
+                        </td>
                       </tr>
                     ))}
                   </tbody>

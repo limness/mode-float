@@ -59,7 +59,8 @@ export function UploadPage() {
     setProgress(0)
 
     // pseudo-progress while awaiting response
-    const pattern = createProgressPattern(90)
+    const pseudoTarget = Math.floor(Math.random() * 10) + 90
+    const pattern = createProgressPattern(pseudoTarget)
     progressTimer.current = window.setInterval(() => {
       setProgress((prev) => pattern(prev))
     }, 250)

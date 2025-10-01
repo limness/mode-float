@@ -13,6 +13,15 @@ export function createProgressPattern(target: number) {
   let simulated = 0
   const maxBeforeTarget = Math.max(target - randomBetween(8, 15), 10)
 
+  const toIntegerProgress = (value: number, prev: number) => {
+    const clamped = Math.min(value, target)
+    const rounded = Math.round(clamped)
+    if (rounded <= prev) {
+      return Math.min(target, prev + 1)
+    }
+    return rounded
+  }
+
   return (prev: number) => {
     if (prev >= target) {
       return target
@@ -26,7 +35,7 @@ export function createProgressPattern(target: number) {
       if (next >= maxBeforeTarget) {
         phase = 'mid'
       }
-      return Math.min(next, target - 5)
+      return toIntegerProgress(Math.min(next, target - 5), prev)
     }
 
     if (phase === 'mid') {
@@ -35,10 +44,11 @@ export function createProgressPattern(target: number) {
       if (eased >= target - 12) {
         phase = 'end'
       }
-      return Math.min(prev + (eased - prev) * 0.4 + noise, target - 5)
+      const midProgress = prev + (eased - prev) * 0.4 + noise
+      return toIntegerProgress(Math.min(midProgress, target - 5), prev)
     }
 
     const finalKick = prev + randomBetween(6, 12)
-    return Math.min(finalKick, target)
+    return toIntegerProgress(finalKick, prev)
   }
 }
