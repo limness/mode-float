@@ -94,9 +94,9 @@ class DefaultMapper(Mapper):
         #     average_speed_kmh = distance_km / duration * 60
 
         return UavFlightCreateDTO(
-            flight_id="FL12345",
+            flight_id='FL12345',
             file_id=None,
-            uav_type="DJI Mavic 3",
+            uav_type='DJI Mavic 3',
             takeoff_lat=55.755826,
             takeoff_lon=37.617300,
             landing_lat=55.755826,
@@ -107,12 +107,13 @@ class DefaultMapper(Mapper):
             landing_datetime=datetime(2024, 1, 15, 11, 15, 0),
             date=datetime(2024, 1, 15).date(),
             duration_minutes=45,
-            city="Москва",
+            city='Москва',
             distance_km=5.2,
             average_speed_kmh=6.9,
             takeoff_region_id=77,
             landing_region_id=77,
-            major_region_id=3)
+            major_region_id=3,
+        )
 
     def _extract(self, text: Any, pattern: str) -> str | None:
         text = str(text) if text is not None else ''

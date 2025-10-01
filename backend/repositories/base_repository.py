@@ -2,8 +2,8 @@ import logging
 from typing import Any, Generic, List, Optional, TypeVar
 
 from asyncpg.exceptions import UniqueViolationError
-from sqlalchemy import delete, select, update, insert
-from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from sqlalchemy import delete, insert, select, update
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.database.base import Base

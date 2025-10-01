@@ -14,8 +14,9 @@ from fastapi import (
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.database.base import get_database
 from backend.core.settings import application_settings
+from backend.database.base import get_database
+from backend.dto import UavFlightCreateDTO
 from backend.exc import IDException
 from backend.schemas.file_schema import FileUploadResponseSchema
 from backend.schemas.uav_schema import DateBoundsResponse
@@ -33,7 +34,6 @@ from backend.services.file_service import (
 from backend.services.parse_service.geocoder import DefaultGeocoder
 from backend.services.parse_service.loader import ExcelLoader
 from backend.services.parse_service.mapper import DefaultMapper
-from backend.dto import UavFlightCreateDTO
 from backend.services.uav_service import (
     create_uav_flights,
     get_uav_date_bounds,

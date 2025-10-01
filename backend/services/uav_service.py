@@ -1,14 +1,12 @@
 import logging
-from datetime import datetime
 from typing import Any
-from backend.dto import UavFlightCreateDTO
 
 from dateutil.parser import isoparse
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.exc import IntegrityError
 
 from backend.database.models import RegionModel, UavFlightModel
+from backend.dto import UavFlightCreateDTO
 from backend.repositories.uav_repository import region_repo, uav_flight_repo
 from backend.schemas.uav_schema import DateBoundsResponse
 from backend.services.exceptions import RegionCreateError, UavFlightCreateError
