@@ -207,7 +207,7 @@ async def get_date_bounds(db_session: AsyncSession = Depends(get_database)) -> D
         )
 
 
-@router.post('/date-bounds/query', status_code=status.HTTP_200_OK)
+@router.get('/date-bounds/query', status_code=status.HTTP_200_OK)
 async def get_flights_between_dates(
     bounds: DateBoundsResponse,
     db_session: AsyncSession = Depends(get_database),
