@@ -57,12 +57,13 @@ class BaseRepository(Generic[T]):
                 result = await db_session.execute(statement)
                 await db_session.flush()
                 saved_rows.add(result)
-                await nested_session.commit()
             except IntegrityError as ex:
                 if not isinstance(ex.orig, UniqueViolationError):
                     raise ex
                 await nested_session.rollback()
                 logger.error(f'Failed to insert {self.__model__} due to duplicate key value!')
+            else:
+                await nested_session.commit()
         return saved_rows
 
     async def delete(self, db_session: AsyncSession, **filters: Any) -> None:
