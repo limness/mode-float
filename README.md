@@ -1,8 +1,8 @@
 <h1 align="center">Fly Potato</h1>
 <div align="center">
-	<img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/limness/mode-float">
-	<img alt="GitHub code size" src="https://img.shields.io/github/languages/code-size/limness/mode-float">
-	<img alt="GitHub commits stats" src="https://img.shields.io/github/commit-activity/y/limness/mode-float">
+	<img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/limness/fly-potato">
+	<img alt="GitHub code size" src="https://img.shields.io/github/languages/code-size/limness/fly-potato">
+	<img alt="GitHub commits stats" src="https://img.shields.io/github/commit-activity/y/limness/fly-potato">
 </div>
 <p align="center">
 <strong>Fly Potato</strong> – сервис для анализа количества и длительности полётов гражданских беспилотников в 
@@ -211,8 +211,8 @@ chmod 600 .env.prod
 1. **Подготовка окружения**
 
    ```bash
-   git clone https://github.com/limness/mode-float
-   cd mode-float
+   git clone https://github.com/limness/fly-potato
+   cd fly-potato
    cp .env.example .env.prod
    # заполните .env.prod, замените домен/секреты
    ```

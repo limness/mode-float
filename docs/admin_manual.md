@@ -248,8 +248,8 @@ flowchart LR
 ### Подготовка окружения
 
 ```bash
-git clone https://github.com/limness/mode-float
-cd mode-float
+git clone https://github.com/limness/fly-potato
+cd fly-potato
 
 cp .env.example .env.dev
 ```
@@ -383,7 +383,7 @@ make all-prod
 
 ### Импорт воркбука
 
-- Скачайте [файл](https://github.com/limness/mode-float/blob/dev/fly-potato-workbook.json) воркбука
+- Скачайте [файл](https://github.com/limness/fly-potato/blob/dev/fly-potato-workbook.json) воркбука
 - Зайдите на [страницу](https://datalens.ru/collections) с Воркбуками
 - В правом верхнем углу нажмите кнопку Создать
 - Импортируйте ранее скаченный файл
