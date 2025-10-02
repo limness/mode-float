@@ -19,7 +19,7 @@ services:
     ports:
       - '${PG_PORT:-5433}:5432'
     volumes:
-      - './data/postgres:/var/lib/postgresql/data'
+      - './data/postgres16:/var/lib/postgresql/data'
     networks:
       - float-net
     healthcheck:
@@ -33,11 +33,9 @@ services:
 
   migration:
     build: .
-    env_file:
-      - .env.dev
-    command: sh -c 'poetry run alembic upgrade head'
-    #    volumes:
-    #      - './alembic/versions:/float-mode/alembic/versions'
+    command: sh -c 'poetry run alembic upgrade 90ae82e041a4'
+#    volumes:
+#      - './alembic/versions:/float-mode/alembic/versions'
     environment:
       POSTGRES_URI: ${POSTGRES_URI:-postgresql+asyncpg://postgres:postgres@postgres:5432/float-mode}
     depends_on:
@@ -51,11 +49,8 @@ services:
 
   backend:
     build: .
-    env_file:
-      - .env.dev
     environment:
-      POSTGRES_URI: 'postgresql+asyncpg://postgres:postgres@postgres:5432/float-mode'
-      LOAD_RUSSIA_REGIONS: '${LOAD_RUSSIA_REGIONS:-true}'
+      POSTGRES_URI: ${POSTGRES_URI:-postgresql+asyncpg://postgres:postgres@postgres:5432/float-mode}
     restart: always
     networks:
       - float-net
@@ -67,7 +62,7 @@ services:
       postgres:
         condition: service_healthy
     ports:
-      - '8073:8000'
+      - ':8000'
     profiles:
       - all
       - core
@@ -82,7 +77,7 @@ services:
     volumes:
       - './config/prometheus.yaml:/etc/prometheus/prometheus.yaml:ro'
       - './config/alert.rules.yaml:/etc/prometheus/alert.rules.yaml:ro'
-      - './data/prometheus:/prometheus'
+      - 'prometheus-data:/prometheus'
     restart: always
     ports:
       - '${PROM_PORT:-9090}:9090'
@@ -128,9 +123,6 @@ services:
   postgres_exporter:
     image: quay.io/prometheuscommunity/postgres-exporter:v0.17.1
     restart: always
-    depends_on:
-      postgres:
-        condition: service_healthy
     ports:
       - '${PG_EXP_PORT:-9187}:9187'
     networks:
@@ -147,11 +139,34 @@ services:
     volumes:
       - './config/sql_exporter.yaml:/etc/sql_exporter/config.yaml:ro'
       - './config/pg_app.collector.yaml:/etc/sql_exporter/pg_app.collector.yaml:ro'
-    depends_on:
-      postgres:
-        condition: service_healthy
+    env_file:
+      - .env.prod
     ports:
       - '${SQL_EXP_PORT:-9399}:9399'
+    networks:
+      - float-net
+    profiles:
+      - all
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:11.2.0
+    container_name: grafana
+    restart: always
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GF_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GF_ADMIN_PASSWORD:-admin}
+      GF_SERVER_ROOT_URL: https://fly-potato.ru/grafana
+      GF_SERVER_SERVE_FROM_SUB_PATH: "true"
+
+    volumes:
+      - ./config/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./data/grafana:/var/lib/grafana:Z
+    ports:
+      - '${GRAFANA_PORT:-3000}:3000'
+    depends_on:
+      prometheus:
+        condition: service_started
     networks:
       - float-net
     profiles:
@@ -167,8 +182,6 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/certs:/etc/nginx/certs:ro
-    #    depends_on:
-    #      - oauth2-proxy
     networks:
       - float-net
     profiles:
@@ -201,6 +214,8 @@ services:
       - --client-id=${OAUTH2_CLIENT_ID:-nginx-client}
       - --client-secret=${OAUTH2_CLIENT_SECRET}
       - --cookie-secret=${OAUTH2_COOKIE_SECRET}
+      - --cookie-expire=168h
+      - --cookie-refresh=10m
       - --http-address=0.0.0.0:4180
       - --redirect-url=http://localhost/oauth2/callback
       - --email-domain=*

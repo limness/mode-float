@@ -2,11 +2,15 @@ services:
   migration:
     image: andrewlimit/float-mode:latest
     build: null
+    env_file:
+      - .env.prod
     volumes: []
 
   backend:
     image: andrewlimit/float-mode:latest
     build: null
+    env_file:
+      - .env.prod
     deploy:
       resources:
         limits:
@@ -22,7 +26,7 @@ services:
   postgres:
     ports: []
     volumes:
-      - "/var/lib/float-mode/pg:/var/lib/postgresql/data"
+      - "./data/postgres16:/var/lib/postgresql/data"
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
 
@@ -41,6 +45,8 @@ services:
       - --client-id=${OAUTH2_CLIENT_ID:-nginx-client}
       - --client-secret=${OAUTH2_CLIENT_SECRET}
       - --cookie-secret=${OAUTH2_COOKIE_SECRET}
+      - --cookie-expire=168h
+      - --cookie-refresh=10m
       - --http-address=0.0.0.0:4180
       - --redirect-url=https://fly-potato.ru/oauth2/callback
       - --email-domain=*
@@ -57,3 +63,15 @@ services:
       KC_HOSTNAME: 'fly-potato.ru'
       KC_HTTP_RELATIVE_PATH: '/sso'
       KC_HTTP_ENABLED: 'true'
+
+  grafana:
+    environment:
+      GF_SERVER_ROOT_URL: "https://fly-potato.ru/grafana"
+      GF_SERVER_SERVE_FROM_SUB_PATH: "true"
+      GF_SERVER_DOMAIN: "fly-potato.ru"
+      GF_SERVER_ROUTER_LOGGING: "true"
+      GF_AUTH_DISABLE_LOGIN_FORM: "false"
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_AUTH_PROXY_ENABLED: "false"
+      GF_SECURITY_ADMIN_USER: ${GF_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GF_ADMIN_PASSWORD:-admin}
