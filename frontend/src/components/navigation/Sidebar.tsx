@@ -1,5 +1,4 @@
 import { NavLink } from 'react-router-dom'
-import { PiNotebookBold, PiSquaresFourBold, PiUploadSimpleBold } from 'react-icons/pi'
 import { classNames } from '../../utils/classNames'
 import { useAuth } from '../../context/AuthContext'
 
@@ -11,12 +10,24 @@ const ArrowDownIcon = () => (
   <img src="/arrow-down.svg" alt="" className="sidebar__icon" aria-hidden="true" />
 )
 
+const OverviewIcon = () => (
+  <img src="/Icons/Icon/24px/Vector.svg" alt="" className="sidebar__icon" aria-hidden="true" />
+)
+
+const UploadIcon = () => (
+  <img src="/Icons/Icon/24px/download.svg" alt="" className="sidebar__icon" aria-hidden="true" />
+)
+
+const JournalIcon = () => (
+  <img src="/Icons/Icon/24px/journal.svg" alt="" className="sidebar__icon" aria-hidden="true" />
+)
+
 const navItems = [
-  { label: 'Обзор', to: '/', icon: PiSquaresFourBold, groups: ['operator', 'admin'] },
+  { label: 'Обзор', to: '/', icon: OverviewIcon, groups: ['operator', 'admin'] },
   { label: 'Регионы', to: '/dashboard-2', icon: MarkerIcon, groups: ['operator', 'admin'] },
   { label: 'Время', to: '/dashboard-3', icon: ArrowDownIcon, groups: ['operator', 'admin'] },
-  { label: 'Отчёт', to: '/upload', icon: PiUploadSimpleBold, groups: ['admin'] },
-  { label: 'Журнал', to: '/journal', icon: PiNotebookBold, groups: ['admin'] },
+  { label: 'Отчёт', to: '/upload', icon: UploadIcon, groups: ['admin'] },
+  { label: 'Журнал', to: '/journal', icon: JournalIcon, groups: ['admin'] },
 ]
 
 interface SidebarProps {

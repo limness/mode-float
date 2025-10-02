@@ -1,10 +1,14 @@
-import { PiListBold, PiSignOutBold } from 'react-icons/pi'
+import { PiListBold } from 'react-icons/pi'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 
 interface TopBarProps {
   onToggleSidebar: () => void
 }
+
+const ExitIcon = () => (
+  <img src="/Icons/Icon/24px/exit.svg" alt="" className="top-bar__icon" aria-hidden="true" />
+)
 
 export function TopBar({ onToggleSidebar }: TopBarProps) {
   const navigate = useNavigate()
@@ -21,7 +25,7 @@ export function TopBar({ onToggleSidebar }: TopBarProps) {
       </button>
       <div className="top-bar__actions">
         <button className="top-bar__icon-button" aria-label="Выйти" onClick={() => navigate('/auth/login')}>
-          <PiSignOutBold size={20} />
+          <ExitIcon />
         </button>
         <div className="user-chip">
           <div className="user-chip__avatar">{initials}</div>

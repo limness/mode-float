@@ -137,6 +137,12 @@
   cursor: pointer;
 }
 
+.top-bar__icon-button .top-bar__icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
 .top-bar__icon-button--menu {
   display: none;
 }
