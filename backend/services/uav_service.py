@@ -2,6 +2,9 @@ import logging
 from typing import Any
 
 from dateutil.parser import isoparse
+from geoalchemy2.elements import WKBElement
+from geoalchemy2.shape import to_shape
+from shapely.geometry import mapping
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -114,21 +117,22 @@ async def get_uav_flights_between_dates(
             limit=limit,
         )
 
-        result = [
-            {
-                column.name: (
-                    getattr(flight, column.name).isoformat()
-                    if hasattr(getattr(flight, column.name), 'isoformat')
-                    else getattr(flight, column.name)
-                )
-                for column in flight.__table__.columns
-                if not (
-                    hasattr(getattr(flight, column.name), '__dict__')
-                    and not isinstance(getattr(flight, column.name), (str, int, float, bool))
-                )
-            }
-            for flight in flights
-        ]
+        result: list[dict[str, Any]] = []
+        for flight in flights:
+            row = {}
+            for column in flight.__table__.columns:
+                value = getattr(flight, column.name)
+
+                if isinstance(value, WKBElement):
+                    try:
+                        row[column.name] = mapping(to_shape(value))
+                    except Exception:
+                        row[column.name] = None
+                elif hasattr(value, 'isoformat'):
+                    row[column.name] = value.isoformat()
+                elif isinstance(value, (str, int, float, bool)) or value is None:
+                    row[column.name] = value
+            result.append(row)
         return result
     except SQLAlchemyError as exc:
         raise UavFlightCreateError(f'Failed to get flights between dates: {exc}') from exc

@@ -14,6 +14,8 @@ Polygon = List[Coordinate]
 RegionPolygons = Dict[str, List[Polygon]]
 
 project = Transformer.from_crs('EPSG:4326', 'EPSG:6933', always_xy=True).transform
+unproject = Transformer.from_crs('EPSG:6933', 'EPSG:4326', always_xy=True).transform
+SIMPLIFY_TOLERANCE_M = 1000.0
 
 
 def _detect_name_field_index(sf: shapefile.Reader) -> int | None:
@@ -76,9 +78,13 @@ async def save_regions_to_db(region_polygons: RegionPolygons, db_session: AsyncS
                 continue
             shapely_poly = max(valid_polygons, key=lambda p: p.area)
             geopolygon = from_shape(shapely_poly, srid=4326)
-            geopolygon_str = str([[[y, x] for x, y in shapely_poly.exterior.coords]])
             shapely_poly_m = transform(project, shapely_poly)
             area = int(shapely_poly_m.area) / 1000000
+
+            simplified_m = shapely_poly_m.simplify(SIMPLIFY_TOLERANCE_M, preserve_topology=True)
+            simplified_ll = transform(unproject, simplified_m)
+            geopolygon_str = str([[[y, x] for x, y in simplified_ll.exterior.coords]])
+
             existing = await db_session.execute(
                 RegionModel.__table__.select().where(RegionModel.name == name)
             )
