@@ -87,6 +87,12 @@
   font-size: 18px;
 }
 
+.sidebar__item .sidebar__icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+
 .sidebar__item:hover {
   background: #1f2024;
   color: var(--color-text-primary);

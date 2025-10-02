@@ -3,10 +3,18 @@ import { PiNotebookBold, PiSquaresFourBold, PiUploadSimpleBold } from 'react-ico
 import { classNames } from '../../utils/classNames'
 import { useAuth } from '../../context/AuthContext'
 
+const MarkerIcon = () => (
+  <img src="/regions-marker.svg" alt="" className="sidebar__icon" aria-hidden="true" />
+)
+
+const ArrowDownIcon = () => (
+  <img src="/arrow-down.svg" alt="" className="sidebar__icon" aria-hidden="true" />
+)
+
 const navItems = [
   { label: 'Обзор', to: '/', icon: PiSquaresFourBold, groups: ['operator', 'admin'] },
-  { label: 'Регионы', to: '/dashboard-2', icon: PiSquaresFourBold, groups: ['operator', 'admin'] },
-  { label: 'Время', to: '/dashboard-3', icon: PiSquaresFourBold, groups: ['operator', 'admin'] },
+  { label: 'Регионы', to: '/dashboard-2', icon: MarkerIcon, groups: ['operator', 'admin'] },
+  { label: 'Время', to: '/dashboard-3', icon: ArrowDownIcon, groups: ['operator', 'admin'] },
   { label: 'Отчёт', to: '/upload', icon: PiUploadSimpleBold, groups: ['admin'] },
   { label: 'Журнал', to: '/journal', icon: PiNotebookBold, groups: ['admin'] },
 ]
