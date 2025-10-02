@@ -19,7 +19,7 @@ const UploadIcon = () => (
 )
 
 const JournalIcon = () => (
-  <img src="/Icons/Icon/24px/journal.svg" alt="" className="sidebar__icon" aria-hidden="true" />
+  <img src="/Vector.svg" alt="" className="sidebar__icon" aria-hidden="true" />
 )
 
 const navItems = [
