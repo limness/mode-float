@@ -26,8 +26,15 @@ export function DashboardPage({
   })
 
   const finalUrl = useMemo(() => {
-    if (signedUrl) return signedUrl
-    return embedUrl
+    const baseUrl = signedUrl ?? embedUrl
+    if (!baseUrl) {
+      return null
+    }
+
+    const url = new URL(baseUrl)
+    // Принудительно включаем тёмную тему DataLens
+    url.hash = url.hash ? `${url.hash}&theme=dark` : '#theme=dark'
+    return url.toString()
   }, [signedUrl, embedUrl])
 
   const hasResolvedEmbed = Boolean(finalUrl)
