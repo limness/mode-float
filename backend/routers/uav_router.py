@@ -114,10 +114,11 @@ async def upload_xlsx_file(
         )
 
     try:
-        await process_xlsx_file(db_session=db_session, file_io=file_io)
+        file_id = str(file_rec.file_id)
+        await process_xlsx_file(db_session=db_session, file_io=file_io, file_id=file_id)
         await update_file_status(
             db_session,
-            file_id=str(file_rec.file_id),
+            file_id=file_id,
             status='processed',
             message='File processed successfully',
         )
@@ -154,6 +155,7 @@ async def upload_xlsx_file(
 async def process_xlsx_file(
     db_session: AsyncSession,
     file_io: io.BytesIO,
+    file_id: str,
 ) -> None:
     """Парсинг Excel-файла и сохранение полётов в БД.
 
@@ -174,6 +176,7 @@ async def process_xlsx_file(
                 uav_flights_batch: list[dict] = []
                 for _, row in df.iterrows():
                     uav_flight: UavFlightCreateDTO = mapper.map_row(row)
+                    uav_flight.file_id = file_id
                     uav_flights_batch.append(uav_flight.model_dump())
 
                     if len(uav_flights_batch) >= application_settings.APP_BATCH_PROCESSING:
