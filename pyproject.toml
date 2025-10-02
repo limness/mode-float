@@ -1,9 +1,9 @@
 [tool.poetry]
-name = "float-mode"
+name = "fly-potato"
 version = "0.1.0"
 description = "Event management bot"
 authors = [
-    "andrejcyrkunov <a.tsyrkunov@float-mode.com>",
+    "andrejcyrkunov <andrey.pwn@gmail.com>",
     "D1ffic00lt <dm.filinov@gmail.com>",
     "yalpcode <sanyaa1aaa@yandex.ru>",
     "pur0ta <pur0ta@yandex.com>"

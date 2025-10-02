@@ -16,7 +16,7 @@ class BaseConfigSettings(BaseSettings):
 
 
 class ApplicationSettings(BaseConfigSettings):
-    APP_TITLE: str = 'float-mode'
+    APP_TITLE: str = 'fly-potato'
     APP_VERSION: str = '0.0.1'
     APP_DEBUG: bool = False
     APP_TELEGRAM_CHANNEL: str = ''

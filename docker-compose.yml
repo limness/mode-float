@@ -13,7 +13,7 @@ services:
   postgres:
     image: postgis/postgis:16-3.4
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-float-mode}
+      POSTGRES_DB: ${POSTGRES_DB:-fly-potato}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
     ports:
@@ -23,7 +23,7 @@ services:
     networks:
       - float-net
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U postgres -d float-mode']
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d fly-potato']
       interval: 5s
       timeout: 3s
       retries: 20
@@ -37,7 +37,7 @@ services:
 #    volumes:
 #      - './alembic/versions:/float-mode/alembic/versions'
     environment:
-      POSTGRES_URI: ${POSTGRES_URI:-postgresql+asyncpg://postgres:postgres@postgres:5432/float-mode}
+      POSTGRES_URI: ${POSTGRES_URI:-postgresql+asyncpg://postgres:postgres@postgres:5432/fly-potato}
     depends_on:
       postgres:
         condition: service_healthy
@@ -50,14 +50,14 @@ services:
   backend:
     build: .
     environment:
-      POSTGRES_URI: ${POSTGRES_URI:-postgresql+asyncpg://postgres:postgres@postgres:5432/float-mode}
+      POSTGRES_URI: ${POSTGRES_URI:-postgresql+asyncpg://postgres:postgres@postgres:5432/fly-potato}
     restart: always
     networks:
       - float-net
     volumes:
-      - './alembic/versions:/float-mode/alembic/versions'
-      - './certs:/float-mode/certs'
-      - './logs:/float-mode/logs'
+      - './alembic/versions:/fly-potato/alembic/versions'
+      - './certs:/fly-potato/certs'
+      - './logs:/fly-potato/logs'
     depends_on:
       postgres:
         condition: service_healthy

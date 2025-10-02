@@ -1,13 +1,13 @@
 services:
   migration:
-    image: andrewlimit/float-mode:latest
+    image: andrewlimit/fly-potato:latest
     build: null
     env_file:
       - .env.prod
     volumes: []
 
   backend:
-    image: andrewlimit/float-mode:latest
+    image: andrewlimit/fly-potato:latest
     build: null
     env_file:
       - .env.prod

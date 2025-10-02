@@ -27,7 +27,7 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ secrets.DOCKER_REGISTRY_USER }}/float-mode:latest
+            ${{ secrets.DOCKER_REGISTRY_USER }}/fly-potato:latest
 
       - name: Deploy to server
         uses: appleboy/ssh-action@v1.2.0

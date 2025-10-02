@@ -10,10 +10,10 @@ scrape_configs:
     static_configs:
       - targets: ['prometheus:9090']
 
-  - job_name: 'float-mode-bot'
+  - job_name: 'fly-potato'
     scrape_interval: 5s
     static_configs:
-      - targets: ['app:8000']
+      - targets: ['backend:8000']
 
   - job_name: 'node_exporter'
     static_configs:

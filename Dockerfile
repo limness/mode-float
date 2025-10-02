@@ -21,7 +21,7 @@ FROM python:3.12-alpine as backend
 RUN apk add --no-cache gcc libffi-dev musl-dev curl bash
 
 # Add project files to install dependencies
-WORKDIR /float-mode
+WORKDIR /fly-potato
 ADD pyproject.toml poetry.lock ./
 
 # Install Poetry and project dependencies

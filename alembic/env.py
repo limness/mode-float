@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 from alembic import context
 
 if (postgres_uri := os.getenv('POSTGRES_URI')) is None:
-    postgres_uri = 'postgresql+asyncpg://postgres:postgres@localhost:5432/float-mode'
+    postgres_uri = 'postgresql+asyncpg://postgres:postgres@localhost:5432/fly-potato'
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

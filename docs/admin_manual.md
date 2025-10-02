@@ -465,7 +465,7 @@ const DATALENS_IDS: Record<string, string | undefined> = {
 ## DEV
 
 ```bash
-PGPASSWORD=postgres pg_dump -h localhost -p 5433 -U postgres -d float-mode -Fc \
+PGPASSWORD=postgres pg_dump -h localhost -p 5433 -U postgres -d fly-potato -Fc \
   -f ./data/postgres-backups/float_$(date +%Y%m%d).dump
 ```
 
