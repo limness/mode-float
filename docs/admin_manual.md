@@ -92,7 +92,6 @@ flowchart LR
     DL -. " TCP 5433 (ro user) " .-> PG
     U == " JWT из BE " ==> DL
     NGINX -. " браузер/iframe HTTPS " .-> DL
-    
     classDef user fill:#eef7ff, stroke: #5b9bd5, stroke-width: 1px, color: #000;
     classDef entry fill:#fff2cc, stroke: #c69c00, stroke-width: 1px;
     classDef svc fill:#e2f0d9, stroke: #548235, stroke-width: 1px;
@@ -536,11 +535,11 @@ scrape_configs:
 - Периметр: наружу открыт только 443/TCP → nginx (опц. 80→443 редирект). Backend/DB/мониторинг без ports:.
 - Доступ админов: только через VPN/бастион, SSH по ключам, MFA для привилегированных учёток.
 - Секреты: в Vault/SSM/Pass; на узлах — только runtime (.env.prod с правами 600), ротация ≥ каждые 90 дней.
-- oauth2-proxy, включены 
-  - cookie-secure
-  - httponly
-  - samesite=lax
-  - прокидываем Authorization и access-token
+- oauth2-proxy, включены
+    - cookie-secure
+    - httponly
+    - samesite=lax
+    - прокидываем Authorization и access-token
 - Keycloak: работает за /sso с KC_PROXY=edge, админка закрыта сетево (только internal/VPN).
 
 # Эксплуатационные регламенты
@@ -573,10 +572,12 @@ docker compose logs -f oauth2-proxy nginx keycloak
 
 ## PROD
 
-- Eжесменно: короткий smoke через периметр (/health), взгляд на 5xx и P95; проверка свободного места БД и срока TLS 
+- Eжесменно: короткий smoke через периметр (/health), взгляд на 5xx и P95; проверка свободного места БД и срока TLS
   (>14 дней).
-- жесменно: короткий smoke через периметр (/health), взгляд на 5xx и P95; проверка свободного места БД и срока TLS (>14 дней).
 - Еженедельно: тест восстановления бэкапа на стенде (в т.ч. PITR); проверка актуальности алертов и on-call контактов.
-- Релиз: пины образов по sha256; порядок — бэкап → pull/up → миграции → smoke; откат — теги назад + alembic downgrade <rev>.
-- Журналы/PII: маскирование секретов; централизованный сбор, ретеншн согласно политике (коротко сослаться на раздел про мониторинг).
-- Инциденты: быстрая локализация (rate-limit/feature-flag/отключение интеграции), затем rollback/фикс; пост-мортем и CAPA в регламентные сроки.
+- Релиз: пины образов по sha256; порядок — бэкап → pull/up → миграции → smoke; откат — теги назад + alembic
+  downgrade <rev>.
+- Журналы/PII: маскирование секретов; централизованный сбор, ретеншн согласно политике (коротко сослаться на раздел про
+  мониторинг).
+- Инциденты: быстрая локализация (rate-limit/feature-flag/отключение интеграции), затем rollback/фикс; пост-мортем и
+  CAPA в регламентные сроки.
