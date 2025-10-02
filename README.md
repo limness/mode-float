@@ -20,6 +20,9 @@
 
 <img src="docs/static/user_manual/dashboard.png" align="center">
 
+> [!NOTE]
+> Подробные [руководство пользователя](docs/pdf/user_manual.pdf) и [руководства администратора](docs/pdf/admin_manual.pdf) вы можете найти в папке [docs](docs)
+
 # Руководство по установке PROD
 
 > [!IMPORTANT]
