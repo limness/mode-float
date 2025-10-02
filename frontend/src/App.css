@@ -88,8 +88,8 @@
 }
 
 .sidebar__item .sidebar__icon {
-  width: 18px;
-  height: 18px;
+  width: 24px;
+  height: 24px;
   object-fit: contain;
 }
 
@@ -138,8 +138,8 @@
 }
 
 .top-bar__icon-button .top-bar__icon {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   object-fit: contain;
 }
 
