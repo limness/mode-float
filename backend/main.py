@@ -55,7 +55,13 @@ def _configure_middlewares(app: FastAPI):
     )
     app.add_middleware(
         JWTMiddleware,
-        exclude_paths=['/docs', '/openapi.json', '/health', '/api/v1/regions/upload-shapefile', '/auth/login'],
+        exclude_paths=[
+            '/docs',
+            '/openapi.json',
+            '/health',
+            '/api/v1/regions/upload-shapefile',
+            '/auth/login',
+        ],
     )
 
 

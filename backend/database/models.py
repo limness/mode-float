@@ -2,8 +2,7 @@ from datetime import datetime
 from typing import Optional
 from uuid import uuid4
 
-from geoalchemy2 import Geometry, WKTElement
-from geoalchemy2.functions import ST_Contains
+from geoalchemy2 import Geometry
 from sqlalchemy import (
     Boolean,
     CheckConstraint,
@@ -14,11 +13,9 @@ from sqlalchemy import (
     Integer,
     String,
     Text,
-    event,
-    select,
 )
 from sqlalchemy.dialects.postgresql import JSONB, UUID
-from sqlalchemy.orm import Mapped, mapped_column, object_session, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
 
@@ -114,50 +111,3 @@ class FileMetadataModel(Base):
         nullable=True,
         default=True,
     )
-
-
-def _find_region_id(point, session):
-    if point is None or session is None:
-        return None
-    return (
-        session.execute(
-            select(RegionModel.id).where(ST_Contains(RegionModel.geopolygon, point)).limit(1)
-        )
-        .scalars()
-        .first()
-    )
-
-
-@event.listens_for(UavFlightModel, 'before_insert')
-@event.listens_for(UavFlightModel, 'before_update')
-def _before_save_flight(mapper, connection, target: 'UavFlightModel'):
-    if target.takeoff_lat is not None and target.takeoff_lon is not None:
-        target.takeoff_point = WKTElement(
-            f'POINT({target.takeoff_lon} {target.takeoff_lat})', srid=4326
-        )
-    else:
-        target.takeoff_point = None
-
-    if target.landing_lat is not None and target.landing_lon is not None:
-        target.landing_point = WKTElement(
-            f'POINT({target.landing_lon} {target.landing_lat})', srid=4326
-        )
-    else:
-        target.landing_point = None
-
-    if target.latitude is not None and target.longitude is not None:
-        target.coordinates = WKTElement(f'POINT({target.longitude} {target.latitude})', srid=4326)
-    else:
-        target.coordinates = None
-
-    session = object_session(target)
-    if session is not None:
-        target.takeoff_region_id = _find_region_id(target.takeoff_point, session)
-        target.landing_region_id = _find_region_id(target.landing_point, session)
-
-    if target.takeoff_region_id is not None:
-        target.major_region_id = target.takeoff_region_id
-    elif target.landing_region_id is not None:
-        target.major_region_id = target.landing_region_id
-    else:
-        target.major_region_id = None
