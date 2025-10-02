@@ -117,30 +117,3 @@ FILES=( "spec.md" "pmi.md" "test_report.md" ... )
 ```
 
 Добавь туда нужные `*.md` — они попадут в сборку.
-
-## Частые проблемы
-
-* **`mmdc: command not found`**
-  Установи Mermaid CLI и проверь `PATH`:
-
-  ```bash
-  sudo npm i -g @mermaid-js/mermaid-cli
-  mmdc --version
-  ```
-
-* **`xelatex: command not found` / ошибки пакетов**
-  Установи TeX Live / MacTeX / MiKTeX. Для Debian/Ubuntu надёжнее `texlive-full`.
-
-* **Ошибки шрифтов (`fontspec`)**
-  Убедись, что XeLaTeX видит системные шрифты. На macOS путь `/Library/TeX/texbin` должен быть в `PATH`.
-
-* **`Permission denied` при запуске**
-  Выдай права: `chmod +x scripts/build_docs.sh`.
-
-* **Мусорные `.log/.aux`**
-  Если скрипт не чистит:
-
-  ```bash
-  find docs -type f -name "*.log" -delete
-  find docs -type f -name "*.aux" -delete
-  ```
