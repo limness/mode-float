@@ -5,7 +5,7 @@
 	<img alt="GitHub commits stats" src="https://img.shields.io/github/commit-activity/y/limness/mode-float">
 </div>
 <p align="center">
-<strong>Flight Potato</strong> – сервис для анализа количества и длительности полётов гражданских беспилотников в 
+<strong>Fly Potato</strong> – сервис для анализа количества и длительности полётов гражданских беспилотников в 
 регионах Российской Федерации для определения полётной активности на основе данных Росавиации.
 </p>
 
