@@ -403,7 +403,21 @@ make all-prod
 
 Для встраивания DataLens в iframe бэкенд выдаёт JWT, который DataLens принимает для SSO/доступа.
 
-TODO
+Для создания .pem файла для генерации JWT токенов перейдите на страницу вашего воркбука, в правом верхнем углу 
+нажмите на три точки, перейдите во вкладку "Ключи для встраивания", создайте ключ и поместите файл в папку certs и 
+укажите путь к этому файл в .env файле (DATALENS_PRIVATE_KEY_PATH).
+
+Далее для каждого дашборда в воркбуке перейдите во вкладку "Настройки встраивания" (три точки справа от названия 
+дашборда), и выберите ваш JWT ключ. В появится уникальный ID, который следует перенести в файл frontend/src/App.tsx.
+
+```
+const DATALENS_IDS: Record<string, string | undefined> = {
+  overview: normalizeEmbedId(import.meta.env.VITE_DATALENS_OVERVIEW_ID) ?? АЙДИ ДАШБОРДА ОБЗОР,
+  regions: normalizeEmbedId(import.meta.env.VITE_DATALENS_REGIONS_ID) ?? 'АЙДИ ДАШБОРДА РЕГИОНЫ',
+  time: normalizeEmbedId(import.meta.env.VITE_DATALENS_TIME_ID) ?? 'АЙДИ ДАШБОРДА ВРЕМЯ',
+}
+```
+
 
 # Конфигурация (DEV + PROD)
 
