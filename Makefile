@@ -1,5 +1,5 @@
 PYTHON_VERSION := 3.12
-CODE_PATH      ?= backend
+CODE_PATH      ?= backend tests
 
 ENV            ?= dev
 ENV_FILE       ?= .env.$(ENV)
