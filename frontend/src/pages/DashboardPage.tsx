@@ -31,10 +31,14 @@ export function DashboardPage({
       return null
     }
 
-    const url = new URL(baseUrl)
-    // Принудительно включаем тёмную тему DataLens
-    url.hash = url.hash ? `${url.hash}&theme=dark` : '#theme=dark'
-    return url.toString()
+    try {
+      const url = new URL(baseUrl)
+      url.searchParams.set('__theme', 'dark')
+      return url.toString()
+    } catch (error) {
+      console.error('[dashboard] failed to apply theme to URL', error)
+      return baseUrl
+    }
   }, [signedUrl, embedUrl])
 
   const hasResolvedEmbed = Boolean(finalUrl)
