@@ -1,40 +1,9 @@
 import { Button } from '../components/common/Button'
 import { useJournalExport } from '../hooks/useJournalExport'
 import { useJournalData } from '../hooks/useJournalData'
+import { classNames } from '../utils/classNames'
 
-import type { JournalRow } from '../hooks/useJournalData'
-
-const fallbackRows: JournalRow[] = [
-  {
-    id: '749792889798',
-    date: '03.06.2024',
-    time: '18:53',
-    type: 'Гражданский',
-    duration: '3 ч 20 мин',
-    takeoff: '55.73906 с.ш., 37.60421 в.д.',
-    landing: '55.73906 с.ш., 37.60421 в.д.',
-    validation: 'valid',
-  },
-  {
-    id: '749792889799',
-    date: '02.06.2024',
-    time: '18:53',
-    type: 'Военный',
-    duration: '3 ч 20 мин',
-    takeoff: '55.73906 с.ш., 37.60421 в.д.',
-    landing: '55.73906 с.ш., 37.60421 в.д.',
-    validation: 'duplicate',
-  },
-  {
-    id: '749792889735',
-    date: '02.06.2024',
-    time: '18:53',
-    type: 'Гражданский',
-    duration: '3 ч 20 мин',
-    takeoff: '55.73906 с.ш., 37.60421 в.д.',
-    landing: '55.73906 с.ш., 37.60421 в.д.',
-  },
-]
+const RECENT_LIMIT = 20
 
 export function JournalPage() {
   const {
@@ -50,10 +19,21 @@ export function JournalPage() {
     error: exportError,
     exportJournal,
   } = useJournalExport()
-  const { rows: latestRows, isLoading: isLoadingRows, error: rowsError, notice: rowsNotice } = useJournalData(20)
+  const { rows: latestRows, isLoading: isLoadingRows, error: rowsError, notice: rowsNotice } = useJournalData(RECENT_LIMIT)
 
   const formatDisplayDate = (date: Date | null) => (date ? date.toLocaleDateString('ru-RU') : '—')
-  const tableRows = (latestRows.length > 0 ? latestRows : fallbackRows).slice(0, 30)
+  const tableRows = latestRows.slice(0, RECENT_LIMIT)
+  const hasRows = tableRows.length > 0
+
+  const renderValidationBadge = (state?: string) => {
+    if (!state) {
+      return <span className="table__cell-sub">—</span>
+    }
+    const normalized = state.toLowerCase()
+    const variant = normalized === 'valid' ? 'success' : normalized === 'duplicate' ? 'warning' : 'info'
+    const label = normalized === 'valid' ? 'Проверено' : normalized === 'duplicate' ? 'Дубликат' : state
+    return <span className={classNames('badge', `badge--${variant}`)}>{label}</span>
+  }
 
   return (
     <div className="page-shell">
@@ -104,54 +84,57 @@ export function JournalPage() {
         {rowsNotice && <p className="export-hint">{rowsNotice}</p>}
 
         <div className="table-card">
-          {isLoadingRows ? (
-            <p className="export-hint">Загружаем последние полёты...</p>
-          ) : (
-            <>
-              <div className="table-card__header">
-                <h2 className="table-card__title">Последние полёты</h2>
-              </div>
-              <div className="table-card__body">
-                <table className="table">
-                  <thead>
-                    <tr>
-                      <th>ID</th>
-                      <th>Дата</th>
-                      <th>Тип БПЛА</th>
-                      <th>Длительность</th>
-                      <th>Координаты взлета</th>
-                      <th>Координаты посадки</th>
+          <div className="table-card__header">
+            <h2 className="table-card__title">Последние полёты</h2>
+            <span className="table-card__meta">{`Показываем ${tableRows.length} из ${RECENT_LIMIT}`}</span>
+          </div>
+          <div className="table-card__body">
+            {isLoadingRows ? (
+              <p className="export-hint">Загружаем последние полёты...</p>
+            ) : hasRows ? (
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Дата</th>
+                    <th>Тип БПЛА</th>
+                    <th>Длительность</th>
+                    <th>Координаты взлета</th>
+                    <th>Координаты посадки</th>
+                    <th>Статус</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {tableRows.map((flight, index) => (
+                    <tr key={`${flight.id}-${index}`}>
+                      <td>
+                        <span className="table__cell-primary">{flight.id}</span>
+                      </td>
+                      <td>
+                        <span className="table__cell-primary">{flight.date}</span>
+                        {flight.time && <span className="table__cell-sub">{flight.time}</span>}
+                      </td>
+                      <td>
+                        <span className="table__cell-primary">{flight.type}</span>
+                      </td>
+                      <td>
+                        <span className="table__cell-primary">{flight.duration}</span>
+                      </td>
+                      <td>
+                        <span className="table__cell-coordinate">{flight.takeoff}</span>
+                      </td>
+                      <td>
+                        <span className="table__cell-coordinate">{flight.landing}</span>
+                      </td>
+                      <td>{renderValidationBadge(flight.validation)}</td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {tableRows.map((flight, index) => (
-                      <tr key={`${flight.id}-${index}`}>
-                        <td>
-                          <span className="table__cell-primary">{flight.id}</span>
-                        </td>
-                        <td>
-                          <span className="table__cell-primary">{flight.date}</span>
-                          {flight.time && <span className="table__cell-sub">{flight.time}</span>}
-                        </td>
-                        <td>
-                          <span className="table__cell-primary">{flight.type}</span>
-                        </td>
-                        <td>
-                          <span className="table__cell-primary">{flight.duration}</span>
-                        </td>
-                        <td>
-                          <span className="table__cell-coordinate">{flight.takeoff}</span>
-                        </td>
-                        <td>
-                          <span className="table__cell-coordinate">{flight.landing}</span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </>
-          )}
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p className="export-hint">За выбранный период нет полётов.</p>
+            )}
+          </div>
         </div>
       </section>
     </div>

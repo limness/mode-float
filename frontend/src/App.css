@@ -407,6 +407,11 @@
   font-weight: 700;
 }
 
+.table-card__meta {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
 .table-card__body {
   padding: 0 28px 28px;
   overflow-x: auto;
@@ -463,6 +468,21 @@
   font-size: 12px;
   background: rgba(255, 255, 255, 0.06);
   color: var(--color-text-secondary);
+}
+
+.badge--success {
+  background: rgba(0, 180, 120, 0.18);
+  color: #46f2b2;
+}
+
+.badge--warning {
+  background: rgba(255, 176, 31, 0.18);
+  color: #ffc96b;
+}
+
+.badge--info {
+  background: rgba(116, 152, 255, 0.18);
+  color: #83a2ff;
 }
 
 @media (max-width: 960px) {
