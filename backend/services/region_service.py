@@ -15,7 +15,7 @@ RegionPolygons = Dict[str, List[Polygon]]
 
 project = Transformer.from_crs('EPSG:4326', 'EPSG:6933', always_xy=True).transform
 unproject = Transformer.from_crs('EPSG:6933', 'EPSG:4326', always_xy=True).transform
-SIMPLIFY_TOLERANCE_M = 1000.0
+SIMPLIFY_TOLERANCE_M = 10000.0
 
 
 def _detect_name_field_index(sf: shapefile.Reader) -> int | None:
