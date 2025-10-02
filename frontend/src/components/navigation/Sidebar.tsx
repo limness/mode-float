@@ -11,7 +11,7 @@ const ArrowDownIcon = () => (
 )
 
 const OverviewIcon = () => (
-  <img src="/Icons/Icon/24px/Vector.svg" alt="" className="sidebar__icon" aria-hidden="true" />
+  <img src="/Vector.svg" alt="" className="sidebar__icon" aria-hidden="true" />
 )
 
 const UploadIcon = () => (
