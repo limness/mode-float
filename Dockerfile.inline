@@ -1,0 +1,28 @@
+# Stage 1: Build stage
+FROM python:3.12-alpine as backend
+
+# Install build dependencies
+RUN apk add --no-cache gcc libffi-dev musl-dev curl bash
+
+# Add project files to install dependencies
+WORKDIR /fly-potato
+ADD pyproject.toml poetry.lock ./
+
+# Install Poetry and project dependencies
+RUN pip install poetry \
+    && poetry config virtualenvs.create false \
+    && poetry install --only main
+
+# Copy application code and required files
+ADD alembic.ini .
+ADD alembic ./alembic
+ADD logs ./logs
+ADD backend ./backend
+ADD scripts ./scripts
+ADD tests ./tests
+RUN mkdir -p ./backend/static
+
+EXPOSE 8000/tcp
+
+# Run the application
+CMD ["bash", "-c", "while true; do sleep 1; done"]

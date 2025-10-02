@@ -5,6 +5,7 @@ ENV            ?= dev
 ENV_FILE       ?= .env.$(ENV)
 PROJECT        ?= float-$(ENV)
 APP_SERVICE    ?= backend
+INLINE_SERVICE ?= inline
 COMPOSE        ?= docker compose
 COMPOSE_FILE   ?= docker-compose.yml
 DC             := $(COMPOSE) -f $(COMPOSE_FILE) --env-file $(ENV_FILE) -p $(PROJECT)
@@ -51,6 +52,11 @@ docker-downgrade:
 docker-migrate:
 	@if [ -z "$(m)" ]; then echo "Specify migration name via m=..."; exit 1; fi
 	$(DC) run --rm $(APP_SERVICE) bash -c "poetry run alembic revision --autogenerate -m '$(m)'"
+
+
+docker-test:
+	$(DC) --profile tests build
+	$(DC) run --rm $(INLINE_SERVICE) pytest $(arg) -k "$(k)"
 
 
 .PHONY: activate-env uvicorn install format check

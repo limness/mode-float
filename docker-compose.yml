@@ -47,6 +47,26 @@ services:
       - all
       - core
 
+  inline:
+    build:
+      context: .
+      dockerfile: Dockerfile.inline
+    env_file:
+      - .env.dev
+    restart: always
+    networks:
+      - float-net
+    volumes:
+      - './alembic/versions:/fly-potato/alembic/versions'
+      - './certs:/fly-potato/certs'
+      - './logs:/fly-potato/logs'
+    ports:
+      - ':8000'
+    profiles:
+      - all
+      - tests
+      - core
+
   backend:
     build: .
     environment:
