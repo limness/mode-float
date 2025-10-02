@@ -33,6 +33,8 @@ services:
 
   migration:
     build: .
+    env_file:
+      - .env.dev
     command: sh -c 'poetry run alembic upgrade head'
     #    volumes:
     #      - './alembic/versions:/float-mode/alembic/versions'
