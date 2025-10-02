@@ -24,13 +24,19 @@ export function useJournalExport(apiBase: string = API_BASE_URL) {
     const loadLimits = async () => {
       setIsLoadingLimits(true)
       try {
-        const response = await fetch(`${apiBase}/date-bounds`, {
+        let response = await fetch(`${apiBase}/date-bounds`, {
           method: 'POST',
           credentials: 'include',
         })
+
+        if (!response.ok) {
+          response = await fetch(`${apiBase}/date-bounds`, { credentials: 'include' })
+        }
+
         if (!response.ok) {
           throw new Error('Не удалось получить доступный период')
         }
+
         const data = (await response.json()) as LimitsResponse
         if (cancelled) return
 
@@ -91,9 +97,18 @@ export function useJournalExport(apiBase: string = API_BASE_URL) {
         max_date: new Date(toDate).toISOString(),
       })
 
-      const response = await fetch(`${apiBase}/journal-json?${params.toString()}`, {
+      let response = await fetch(`${apiBase}/journal-json?${params.toString()}`, {
         credentials: 'include',
       })
+
+      if (!response.ok) {
+        response = await fetch(`${apiBase}/journal-json`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(Object.fromEntries(params.entries())),
+        })
+      }
 
       if (!response.ok) {
         if (response.status >= 500) {

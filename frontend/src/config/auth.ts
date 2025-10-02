@@ -1,4 +1,5 @@
-const KEYCLOAK_LOGIN_URL = import.meta.env.VITE_KEYCLOAK_LOGIN_URL?.trim()
+const RAW_KEYCLOAK_LOGIN_URL = import.meta.env.VITE_KEYCLOAK_LOGIN_URL?.trim()
+const FALLBACK_KEYCLOAK_LOGIN_URL = '/oauth2/start'
 
 function isValidUrl(url: string): boolean {
   try {
@@ -29,20 +30,42 @@ function isLoopback(url: string): boolean {
   }
 }
 
+interface KeycloakLoginInfo {
+  url: string | null
+  error: string | null
+}
+
+const resolvedLoginInfo: KeycloakLoginInfo = (() => {
+  if (!RAW_KEYCLOAK_LOGIN_URL) {
+    return { url: FALLBACK_KEYCLOAK_LOGIN_URL, error: null }
+  }
+
+  if (!isValidUrl(RAW_KEYCLOAK_LOGIN_URL)) {
+    return {
+      url: FALLBACK_KEYCLOAK_LOGIN_URL,
+      error: 'Некорректный URL Keycloak. Используем резервный вход через /oauth2/start.',
+    }
+  }
+
+  if (isLoopback(RAW_KEYCLOAK_LOGIN_URL)) {
+    return {
+      url: FALLBACK_KEYCLOAK_LOGIN_URL,
+      error: 'URL авторизации указывает на текущую страницу. Используем резервный вход через /oauth2/start.',
+    }
+  }
+
+  return { url: RAW_KEYCLOAK_LOGIN_URL, error: null }
+})()
+
+export function getKeycloakLoginInfo(): KeycloakLoginInfo {
+  return resolvedLoginInfo
+}
+
 export function redirectToKeycloakLogin() {
-  if (!KEYCLOAK_LOGIN_URL) {
-    console.error('[auth] VITE_KEYCLOAK_LOGIN_URL is not set. Keycloak redirect cancelled.')
+  const { url } = resolvedLoginInfo
+  if (!url) {
+    console.error('[auth] Keycloak login URL is invalid or missing. Redirect cancelled.')
     return
   }
-
-  if (!isValidUrl(KEYCLOAK_LOGIN_URL)) {
-    return
-  }
-
-  if (isLoopback(KEYCLOAK_LOGIN_URL)) {
-    console.error('[auth] VITE_KEYCLOAK_LOGIN_URL points to the current page. Redirect aborted to avoid loop.')
-    return
-  }
-
-  window.location.href = KEYCLOAK_LOGIN_URL
+  window.location.href = url
 }

@@ -102,13 +102,19 @@ export function useJournalData(limit = 20): UseJournalDataResult {
     setIsLoading(true)
     try {
       setNotice(null)
-      const limitsResponse = await fetch(LIMITS_ENDPOINT, {
+      let limitsResponse = await fetch(LIMITS_ENDPOINT, {
         method: 'POST',
         credentials: 'include',
       })
+
+      if (!limitsResponse.ok) {
+        limitsResponse = await fetch(LIMITS_ENDPOINT, { credentials: 'include' })
+      }
+
       if (!limitsResponse.ok) {
         throw new Error('Не удалось получить доступный период')
       }
+
       const limits = (await limitsResponse.json()) as { min_date: string | null; max_date: string | null }
       const max = limits.max_date ? new Date(limits.max_date) : new Date()
       const minBound = limits.min_date ? new Date(limits.min_date) : null
@@ -117,7 +123,7 @@ export function useJournalData(limit = 20): UseJournalDataResult {
       }
       const windowMs = 7 * 24 * 60 * 60 * 1000
       const candidateFrom = new Date(max.getTime() - windowMs)
-      const from = minBound && candidateFrom < minBound ? minBound : candidateFrom
+      const from = minBound ?? candidateFrom
       const params = new URLSearchParams({
         min_date: from.toISOString(),
         max_date: max.toISOString(),
@@ -125,9 +131,19 @@ export function useJournalData(limit = 20): UseJournalDataResult {
       if (limit) {
         params.set('limit', String(limit))
       }
-      const response = await fetch(`${JOURNAL_ENDPOINT}?${params.toString()}`, {
+      let response = await fetch(`${JOURNAL_ENDPOINT}?${params.toString()}`, {
         credentials: 'include',
       })
+
+      if (!response.ok) {
+        response = await fetch(`${JOURNAL_ENDPOINT}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(Object.fromEntries(params.entries())),
+        })
+      }
+
       if (!response.ok) {
         throw new Error('Не удалось загрузить последние полёты')
       }
@@ -158,13 +174,8 @@ export function useJournalData(limit = 20): UseJournalDataResult {
     } catch (err) {
       console.error('[journal] failed to fetch data', err)
       const message = err instanceof Error ? err.message : 'Не удалось загрузить журнал'
-      if (message.includes('Сессия истекла')) {
-        setNotice(message)
-        setRaw([])
-      } else {
-        setNotice('Показаны демонстрационные данные: нет подключения к базе данных')
-        setRaw([])
-      }
+      setNotice(message)
+      setRaw([])
       setError(message)
     } finally {
       setIsLoading(false)

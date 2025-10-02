@@ -636,6 +636,17 @@
   font-size: 13px;
 }
 
+.auth-card__error {
+  margin: 0;
+  text-align: center;
+  font-size: 13px;
+  color: #ff8484;
+  background: rgba(255, 98, 98, 0.12);
+  border: 1px solid rgba(255, 98, 98, 0.24);
+  padding: 10px 14px;
+  border-radius: 12px;
+}
+
 .auth-form {
   display: flex;
   flex-direction: column;
@@ -758,4 +769,10 @@
   color: var(--color-text-muted);
   font-size: 14px;
   text-align: center;
+}
+.auth-card__hint {
+  margin: 0;
+  text-align: center;
+  font-size: 13px;
+  color: var(--color-text-muted);
 }
