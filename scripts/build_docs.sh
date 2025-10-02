@@ -51,7 +51,8 @@ build_one () {
   MERMAID_OUTDIR="$MERMAID_OUTDIR_REL" pandoc \
     --from=markdown+table_captions+footnotes \
     --metadata-file="$METADATA" \
-    --number-sections --toc \
+    --number-sections \
+    --toc \
     --template="$TEMPLATE" \
     --pdf-engine=xelatex \
     --lua-filter="$MERMAID_LUA" \
