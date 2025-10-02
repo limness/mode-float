@@ -248,8 +248,8 @@ flowchart LR
 ### Подготовка окружения
 
 ```bash
-git clone https://github.com/limness/mode-float
-cd mode-float
+git clone https://github.com/limness/fly-potato
+cd fly-potato
 
 cp .env.example .env.dev
 ```
@@ -383,7 +383,7 @@ make all-prod
 
 ### Импорт воркбука
 
-- Скачайте [файл](https://github.com/limness/mode-float/blob/dev/fly-potato-workbook.json) воркбука
+- Скачайте [файл](https://github.com/limness/fly-potato/blob/dev/fly-potato-workbook.json) воркбука
 - Зайдите на [страницу](https://datalens.ru/collections) с Воркбуками
 - В правом верхнем углу нажмите кнопку Создать
 - Импортируйте ранее скаченный файл
@@ -521,6 +521,14 @@ scrape_configs:
 - InstanceDown для backend и БД.
 - Ошибки аутентификации (рост 401/403 на nginx в PROD; в DEV можно смотреть вручную по логам).
 - P95 latency для /api/* (в DEV — информативно).
+
+
+## Grafana
+В системе есть панель мониторинга **Grafana** по адресу: **https://YOUR_DOMAIN/grafana**.
+Учётные данные берутся из переменных окружения в файле **.env** (GF_SECURITY_ADMIN_USER и GF_SECURITY_ADMIN_PASSWORD). 
+Эти логин/пароль задаются при деплое и используются для первого входа. 
+Далее рекомендуются отдельные пользователи/роли и отключение дефолтных кредов. Grafana нужна, чтобы быстро смотреть состояние сервисов (доступность, ошибки, задержки, ресурсы) и разбирать инциденты — достаточно открыть нужный дашборд и выбрать интервал.
+![Пример дашборда Grafana](static/admin_manual/grafana.png){fig-align=center width=100%}
 
 # Доступы и безопасность
 

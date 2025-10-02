@@ -4,7 +4,7 @@ set -euo pipefail
 # run before using (for mermaid graphs compiling)
 # sudo npm i -g @mermaid-js/mermaid-cli
 
-SRCDIR="../docs"
+SRCDIR="docs"
 OUTPDFDIR="pdf"
 TEMPLATE="templates/eis.gost.tex"
 METADATA="refs.yaml"
