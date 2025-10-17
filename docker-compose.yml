@@ -33,9 +33,9 @@ services:
 
   migration:
     build: .
-    command: sh -c 'poetry run alembic upgrade 90ae82e041a4'
-#    volumes:
-#      - './alembic/versions:/float-mode/alembic/versions'
+    command: sh -c 'poetry run alembic upgrade head'
+    #    volumes:
+    #      - './alembic/versions:/float-mode/alembic/versions'
     environment:
       POSTGRES_URI: ${POSTGRES_URI:-postgresql+asyncpg://postgres:postgres@postgres:5432/fly-potato}
     depends_on:

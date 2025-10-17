@@ -9,6 +9,7 @@ import pandas as pd
 from backend.dto import UavFlightCreateDTO
 
 from .geocoder import Geocoder
+from .party_classifier import PartyClassifier
 
 
 def ensure_aware(x, tz='Europe/Moscow'):
@@ -30,8 +31,9 @@ class Mapper(Protocol):
 
 
 class DefaultMapper(Mapper):
-    def __init__(self, geocoder: Geocoder):
+    def __init__(self, geocoder: Geocoder, party_classifier: PartyClassifier):
         self.geocoder = geocoder
+        self.party_classifier = party_classifier
 
     def map_row(self, row: pd.Series) -> UavFlightCreateDTO:
         city = row.get('Центр ЕС ОрВД', '')
@@ -41,6 +43,12 @@ class DefaultMapper(Mapper):
 
         sid = self._extract(raw_dep, r'-SID\s+(\d+)') or ''
         uav_type = self._extract(raw_shr, r'TYP/([A-Z0-9]+)') or 'UNKNOWN'
+
+        operator_raw = self._extract(raw_shr, r'OPR/([\s\S]*?)(?:\b[A-Z]{2,4}/|$)') or ''
+        operator_raw = operator_raw.strip().upper().replace('\n', ' ').replace('\r', ' ')
+
+        operator_classification = self.party_classifier.classify(operator_raw)
+        operator_type = operator_classification.category
 
         route_lines = re.findall(r'^-M.*$', raw_shr, flags=re.MULTILINE)
         route_points = []
@@ -97,6 +105,8 @@ class DefaultMapper(Mapper):
             file_id=None,
             flight_id=sid,
             uav_type=uav_type,
+            operator_name=operator_raw or None,
+            operator_type=operator_type,
             takeoff_lat=takeoff_lat,
             takeoff_lon=takeoff_lon,
             landing_lat=landing_lat,

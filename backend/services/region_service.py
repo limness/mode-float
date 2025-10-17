@@ -62,6 +62,8 @@ def group_polygons_by_region(sf: shapefile.Reader) -> RegionPolygons:
     for idx, shape in enumerate(shapes):
         rec = records[idx]
         region_name = _safe_record_name(rec, name_field_index)
+        if region_name.strip() in ['Автономна Республіка Крим']:
+            continue
         polygons = _shape_to_polygons(shape.points, shape.parts)
         if not polygons:
             continue

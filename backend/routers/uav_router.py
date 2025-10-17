@@ -35,6 +35,7 @@ from backend.services.file_service import (
 from backend.services.parse_service.geocoder import DefaultGeocoder
 from backend.services.parse_service.loader import ExcelLoader
 from backend.services.parse_service.mapper import DefaultMapper
+from backend.services.parse_service.party_classifier import PartyClassifier
 from backend.services.uav_service import (
     create_uav_flights,
     get_uav_date_bounds,
@@ -167,7 +168,7 @@ async def process_xlsx_file(
         with pd.ExcelFile(file_io) as excel_file:
             for sheet_name in excel_file.sheet_names:
                 loader = ExcelLoader(source=excel_file, sheet_name=sheet_name)
-                mapper = DefaultMapper(DefaultGeocoder())
+                mapper = DefaultMapper(DefaultGeocoder(), PartyClassifier())
 
                 df = loader.load()
                 if df.empty:

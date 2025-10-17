@@ -42,7 +42,11 @@ class RegionModel(Base):
         back_populates='landing_region',
     )
 
-    __table_args__ = (Index('idx_regions_geopolygon', 'geopolygon', postgresql_using='gist'),)
+    __table_args__ = (
+        Index('idx_regions_geopolygon', 'geopolygon', postgresql_using='gist'),
+        Index('idx_regions_name', 'name'),
+        Index('idx_regions_area', 'area'),
+    )
 
 
 class UavFlightModel(Base):
@@ -52,6 +56,9 @@ class UavFlightModel(Base):
     flight_id: Mapped[str] = mapped_column(String(64), unique=True, nullable=True)
     file_id: Mapped[UUID] = mapped_column(ForeignKey('file_metadata.file_id'), nullable=True)
     uav_type: Mapped[str] = mapped_column(String(64), nullable=True)
+    operator_name: Mapped[str] = mapped_column(String(128), nullable=True)
+    operator_type: Mapped[str] = mapped_column(String(64), nullable=True)
+
     takeoff_point: Mapped[Geometry] = mapped_column(
         Geometry(geometry_type='POINT', srid=4326), nullable=True
     )
@@ -94,6 +101,16 @@ class UavFlightModel(Base):
         Index('idx_uav_flights_takeoff_point', 'takeoff_point', postgresql_using='gist'),
         Index('idx_uav_flights_landing_point', 'landing_point', postgresql_using='gist'),
         Index('idx_uav_flights_coordinates', 'coordinates', postgresql_using='gist'),
+        Index('idx_uav_flights_file_id', 'file_id'),
+        Index('idx_uav_flights_uav_type', 'uav_type'),
+        Index('idx_uav_flights_operator_name', 'operator_name'),
+        Index('idx_uav_flights_operator_type', 'operator_type'),
+        Index('idx_uav_flights_city', 'city'),
+        Index('idx_uav_flights_major_region_id', 'major_region_id'),
+        Index('idx_uav_flights_takeoff_region_id', 'takeoff_region_id'),
+        Index('idx_uav_flights_landing_region_id', 'landing_region_id'),
+        Index('idx_uav_flights_distance_km', 'distance_km'),
+        Index('idx_uav_flights_average_speed_kmh', 'average_speed_kmh'),
     )
 
 
@@ -110,4 +127,10 @@ class FileMetadataModel(Base):
         Boolean,
         nullable=True,
         default=True,
+    )
+
+    __table_args__ = (
+        Index('idx_file_metadata_filename', 'filename'),
+        Index('idx_file_metadata_status', 'status'),
+        Index('idx_file_metadata_is_active', 'is_active'),
     )

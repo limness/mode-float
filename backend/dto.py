@@ -11,7 +11,9 @@ class UavFlightCreateDTO(BaseModel):
     flight_id: str | None = None
     file_id: Optional[UUID] = None
     uav_type: str | None = None
-
+    operator_name: str | None = None
+    operator_type: str | None = None
+    
     takeoff_lat: float | None = None
     takeoff_lon: float | None = None
     landing_lat: float | None = None
