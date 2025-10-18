@@ -21,6 +21,10 @@ jobs:
           username: ${{ secrets.DOCKER_REGISTRY_USER }}
           password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
 
+      - name: Extract short commit SHA
+        id: vars
+        run: echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
@@ -28,6 +32,7 @@ jobs:
           push: true
           tags: |
             ${{ secrets.DOCKER_REGISTRY_USER }}/fly-potato:latest
+            ${{ secrets.DOCKER_REGISTRY_USER }}/fly-potato:${{ env.SHORT_SHA }}
 
       - name: Deploy to server
         uses: appleboy/ssh-action@v1.2.0
