@@ -15,14 +15,9 @@ if (postgres_uri := os.getenv('POSTGRES_URI')) is None:
 config = context.config
 config.set_main_option("sqlalchemy.url", postgres_uri)
 
-# Interpret the config file for Python logging.
-# This line sets up loggers basically.
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# add your model's MetaData object here
-# for 'autogenerate' support
-from backend.database.base import Base
 from backend.database.models import *
 
 target_metadata = Base.metadata
